@@ -1,0 +1,681 @@
+fof / subclass_defn : 
+    ! [X,Y] :
+      ( subclass(X,Y)
+    <=> ! [U] :
+          ( member(U,X)
+         => member(U,Y) ) ) 
+
+fof / class_elements_are_sets : 
+    ! [X] : subclass(X,universal_class) 
+
+fof / extensionality : 
+    ! [X,Y] :
+      ( X = Y
+    <=> ( subclass(X,Y)
+        & subclass(Y,X) ) ) 
+
+fof / unordered_pair_defn : 
+    ! [U,X,Y] :
+      ( member(U,unordered_pair(X,Y))
+    <=> ( member(U,universal_class)
+        & ( U = X
+          | U = Y ) ) ) 
+
+fof / unordered_pair : 
+    ! [X,Y] : member(unordered_pair(X,Y),universal_class) 
+
+fof / singleton_set_defn : 
+    ! [X] : singleton(X) = unordered_pair(X,X) 
+
+fof / ordered_pair_defn : 
+    ! [X,Y] : ordered_pair(X,Y) = unordered_pair(singleton(X),unordered_pair(X,singleton(Y))) 
+
+fof / cross_product_defn : 
+    ! [U,V,X,Y] :
+      ( member(ordered_pair(U,V),cross_product(X,Y))
+    <=> ( member(U,X)
+        & member(V,Y) ) ) 
+
+fof / first_second : 
+    ! [X,Y] :
+      ( ( member(X,universal_class)
+        & member(Y,universal_class) )
+     => ( first(ordered_pair(X,Y)) = X
+        & second(ordered_pair(X,Y)) = Y ) ) 
+
+fof / cross_product : 
+    ! [X,Y,Z] :
+      ( member(Z,cross_product(X,Y))
+     => Z = ordered_pair(first(Z),second(Z)) ) 
+
+fof / element_relation_defn : 
+    ! [X,Y] :
+      ( member(ordered_pair(X,Y),element_relation)
+    <=> ( member(Y,universal_class)
+        & member(X,Y) ) ) 
+
+fof / element_relation : 
+    subclass(element_relation,cross_product(universal_class,universal_class)) 
+
+fof / intersection : 
+    ! [X,Y,Z] :
+      ( member(Z,intersection(X,Y))
+    <=> ( member(Z,X)
+        & member(Z,Y) ) ) 
+
+fof / complement : 
+    ! [X,Z] :
+      ( member(Z,complement(X))
+    <=> ( member(Z,universal_class)
+        & ~ member(Z,X) ) ) 
+
+fof / restrict_defn : 
+    ! [X,XR,Y] : restrict(XR,X,Y) = intersection(XR,cross_product(X,Y)) 
+
+fof / null_class_defn : 
+    ! [X] : ~ member(X,null_class) 
+
+fof / domain_of : 
+    ! [X,Z] :
+      ( member(Z,domain_of(X))
+    <=> ( member(Z,universal_class)
+        & restrict(X,singleton(Z),universal_class) != null_class ) ) 
+
+fof / rotate_defn : 
+    ! [X,U,V,W] :
+      ( member(ordered_pair(ordered_pair(U,V),W),rotate(X))
+    <=> ( member(ordered_pair(ordered_pair(U,V),W),cross_product(cross_product(universal_class,universal_class),universal_class))
+        & member(ordered_pair(ordered_pair(V,W),U),X) ) ) 
+
+fof / rotate : 
+    ! [X] : subclass(rotate(X),cross_product(cross_product(universal_class,universal_class),universal_class)) 
+
+fof / flip_defn : 
+    ! [U,V,W,X] :
+      ( member(ordered_pair(ordered_pair(U,V),W),flip(X))
+    <=> ( member(ordered_pair(ordered_pair(U,V),W),cross_product(cross_product(universal_class,universal_class),universal_class))
+        & member(ordered_pair(ordered_pair(V,U),W),X) ) ) 
+
+fof / flip : 
+    ! [X] : subclass(flip(X),cross_product(cross_product(universal_class,universal_class),universal_class)) 
+
+fof / union_defn : 
+    ! [X,Y,Z] :
+      ( member(Z,union(X,Y))
+    <=> ( member(Z,X)
+        | member(Z,Y) ) ) 
+
+fof / successor_defn : 
+    ! [X] : successor(X) = union(X,singleton(X)) 
+
+fof / successor_relation_defn1 : 
+    subclass(successor_relation,cross_product(universal_class,universal_class)) 
+
+fof / successor_relation_defn2 : 
+    ! [X,Y] :
+      ( member(ordered_pair(X,Y),successor_relation)
+    <=> ( member(X,universal_class)
+        & member(Y,universal_class)
+        & successor(X) = Y ) ) 
+
+fof / inverse_defn : 
+    ! [Y] : inverse(Y) = domain_of(flip(cross_product(Y,universal_class))) 
+
+fof / range_of_defn : 
+    ! [Z] : range_of(Z) = domain_of(inverse(Z)) 
+
+fof / image_defn : 
+    ! [X,XR] : image(XR,X) = range_of(restrict(XR,X,universal_class)) 
+
+fof / inductive_defn : 
+    ! [X] :
+      ( inductive(X)
+    <=> ( member(null_class,X)
+        & subclass(image(successor_relation,X),X) ) ) 
+
+fof / infinity : 
+    ? [X] :
+      ( member(X,universal_class)
+      & inductive(X)
+      & ! [Y] :
+          ( inductive(Y)
+         => subclass(X,Y) ) ) 
+
+fof / sum_class_defn : 
+    ! [U,X] :
+      ( member(U,sum_class(X))
+    <=> ? [Y] :
+          ( member(U,Y)
+          & member(Y,X) ) ) 
+
+fof / sum_class : 
+    ! [X] :
+      ( member(X,universal_class)
+     => member(sum_class(X),universal_class) ) 
+
+fof / power_class_defn : 
+    ! [U,X] :
+      ( member(U,power_class(X))
+    <=> ( member(U,universal_class)
+        & subclass(U,X) ) ) 
+
+fof / power_class : 
+    ! [U] :
+      ( member(U,universal_class)
+     => member(power_class(U),universal_class) ) 
+
+fof / compose_defn1 : 
+    ! [XR,YR] : subclass(compose(YR,XR),cross_product(universal_class,universal_class)) 
+
+fof / compose_defn2 : 
+    ! [XR,YR,U,V] :
+      ( member(ordered_pair(U,V),compose(YR,XR))
+    <=> ( member(U,universal_class)
+        & member(V,image(YR,image(XR,singleton(U)))) ) ) 
+
+fof / identity_relation : 
+    ! [Z] :
+      ( member(Z,identity_relation)
+    <=> ? [X] :
+          ( member(X,universal_class)
+          & Z = ordered_pair(X,X) ) ) 
+
+fof / function_defn : 
+    ! [XF] :
+      ( function(XF)
+    <=> ( subclass(XF,cross_product(universal_class,universal_class))
+        & subclass(compose(XF,inverse(XF)),identity_relation) ) ) 
+
+fof / replacement : 
+    ! [X,XF] :
+      ( ( member(X,universal_class)
+        & function(XF) )
+     => member(image(XF,X),universal_class) ) 
+
+fof / disjoint_defn : 
+    ! [X,Y] :
+      ( disjoint(X,Y)
+    <=> ! [U] :
+          ~ ( member(U,X)
+            & member(U,Y) ) ) 
+
+fof / regularity : 
+    ! [X] :
+      ( X != null_class
+     => ? [U] :
+          ( member(U,universal_class)
+          & member(U,X)
+          & disjoint(U,X) ) ) 
+
+fof / apply_defn : 
+    ! [XF,Y] : apply(XF,Y) = sum_class(image(XF,singleton(Y))) 
+
+fof / choice : 
+    ? [XF] :
+      ( function(XF)
+      & ! [Y] :
+          ( member(Y,universal_class)
+         => ( Y = null_class
+            | member(apply(XF,Y),Y) ) ) ) 
+
+fof / subset : 
+    ! [A,B] :
+      ( subset(A,B)
+    <=> ! [X] :
+          ( member(X,A)
+         => member(X,B) ) ) 
+
+fof / equal_set : 
+    ! [A,B] :
+      ( equal_set(A,B)
+    <=> ( subset(A,B)
+        & subset(B,A) ) ) 
+
+fof / power_set : 
+    ! [X,A] :
+      ( member(X,power_set(A))
+    <=> subset(X,A) ) 
+
+fof / intersection : 
+    ! [X,A,B] :
+      ( member(X,intersection(A,B))
+    <=> ( member(X,A)
+        & member(X,B) ) ) 
+
+fof / union : 
+    ! [X,A,B] :
+      ( member(X,union(A,B))
+    <=> ( member(X,A)
+        | member(X,B) ) ) 
+
+fof / empty_set : 
+    ! [X] : ~ member(X,empty_set) 
+
+fof / difference : 
+    ! [B,A,E] :
+      ( member(B,difference(E,A))
+    <=> ( member(B,E)
+        & ~ member(B,A) ) ) 
+
+fof / singleton : 
+    ! [X,A] :
+      ( member(X,singleton(A))
+    <=> X = A ) 
+
+fof / unordered_pair : 
+    ! [X,A,B] :
+      ( member(X,unordered_pair(A,B))
+    <=> ( X = A
+        | X = B ) ) 
+
+fof / sum : 
+    ! [X,A] :
+      ( member(X,sum(A))
+    <=> ? [Y] :
+          ( member(Y,A)
+          & member(X,Y) ) ) 
+
+fof / product : 
+    ! [X,A] :
+      ( member(X,product(A))
+    <=> ! [Y] :
+          ( member(Y,A)
+         => member(X,Y) ) ) 
+
+fof / maps : 
+    ! [F,A,B] :
+      ( maps(F,A,B)
+    <=> ( ! [X] :
+            ( member(X,A)
+           => ? [Y] :
+                ( member(Y,B)
+                & apply(F,X,Y) ) )
+        & ! [X,Y1,Y2] :
+            ( ( member(X,A)
+              & member(Y1,B)
+              & member(Y2,B) )
+           => ( ( apply(F,X,Y1)
+                & apply(F,X,Y2) )
+             => Y1 = Y2 ) ) ) ) 
+
+fof / compose_predicate : 
+    ! [H,G,F,A,B,C] :
+      ( compose_predicate(H,G,F,A,B,C)
+    <=> ! [X,Z] :
+          ( ( member(X,A)
+            & member(Z,C) )
+         => ( apply(H,X,Z)
+          <=> ? [Y] :
+                ( member(Y,B)
+                & apply(F,X,Y)
+                & apply(G,Y,Z) ) ) ) ) 
+
+fof / compose_function : 
+    ! [G,F,A,B,C,X,Z] :
+      ( ( member(X,A)
+        & member(Z,C) )
+     => ( apply(compose_function(G,F,A,B,C),X,Z)
+      <=> ? [Y] :
+            ( member(Y,B)
+            & apply(F,X,Y)
+            & apply(G,Y,Z) ) ) ) 
+
+fof / equal_maps : 
+    ! [F,G,A,B] :
+      ( equal_maps(F,G,A,B)
+    <=> ! [X,Y1,Y2] :
+          ( ( member(X,A)
+            & member(Y1,B)
+            & member(Y2,B) )
+         => ( ( apply(F,X,Y1)
+              & apply(G,X,Y2) )
+           => Y1 = Y2 ) ) ) 
+
+fof / identity : 
+    ! [F,A] :
+      ( identity(F,A)
+    <=> ! [X] :
+          ( member(X,A)
+         => apply(F,X,X) ) ) 
+
+fof / injective : 
+    ! [F,A,B] :
+      ( injective(F,A,B)
+    <=> ! [X1,X2,Y] :
+          ( ( member(X1,A)
+            & member(X2,A)
+            & member(Y,B) )
+         => ( ( apply(F,X1,Y)
+              & apply(F,X2,Y) )
+           => X1 = X2 ) ) ) 
+
+fof / surjective : 
+    ! [F,A,B] :
+      ( surjective(F,A,B)
+    <=> ! [Y] :
+          ( member(Y,B)
+         => ? [E] :
+              ( member(E,A)
+              & apply(F,E,Y) ) ) ) 
+
+fof / one_to_one : 
+    ! [F,A,B] :
+      ( one_to_one(F,A,B)
+    <=> ( injective(F,A,B)
+        & surjective(F,A,B) ) ) 
+
+fof / inverse_predicate : 
+    ! [G,F,A,B] :
+      ( inverse_predicate(G,F,A,B)
+    <=> ! [X,Y] :
+          ( ( member(X,A)
+            & member(Y,B) )
+         => ( apply(F,X,Y)
+          <=> apply(G,Y,X) ) ) ) 
+
+fof / inverse_function : 
+    ! [F,A,B,X,Y] :
+      ( ( member(X,A)
+        & member(Y,B) )
+     => ( apply(F,X,Y)
+      <=> apply(inverse_function(F,A,B),Y,X) ) ) 
+
+fof / image2 : 
+    ! [F,A,Y] :
+      ( member(Y,image2(F,A))
+    <=> ? [X] :
+          ( member(X,A)
+          & apply(F,X,Y) ) ) 
+
+fof / image3 : 
+    ! [F,A,B,Y] :
+      ( member(Y,image3(F,A,B))
+    <=> ( member(Y,B)
+        & ? [X] :
+            ( member(X,A)
+            & apply(F,X,Y) ) ) ) 
+
+fof / inverse_image2 : 
+    ! [F,B,X] :
+      ( member(X,inverse_image2(F,B))
+    <=> ? [Y] :
+          ( member(Y,B)
+          & apply(F,X,Y) ) ) 
+
+fof / inverse_image3 : 
+    ! [F,B,A,X] :
+      ( member(X,inverse_image3(F,B,A))
+    <=> ( member(X,A)
+        & ? [Y] :
+            ( member(Y,B)
+            & apply(F,X,Y) ) ) ) 
+
+fof / increasing_function : 
+    ! [F,A,R,B,S] :
+      ( increasing(F,A,R,B,S)
+    <=> ! [X1,Y1,X2,Y2] :
+          ( ( member(X1,A)
+            & member(Y1,B)
+            & member(X2,A)
+            & member(Y2,B)
+            & apply(R,X1,X2)
+            & apply(F,X1,Y1)
+            & apply(F,X2,Y2) )
+         => apply(S,Y1,Y2) ) ) 
+
+fof / decreasing_function : 
+    ! [F,A,R,B,S] :
+      ( decreasing(F,A,R,B,S)
+    <=> ! [X1,Y1,X2,Y2] :
+          ( ( member(X1,A)
+            & member(Y1,B)
+            & member(X2,A)
+            & member(Y2,B)
+            & apply(R,X1,X2)
+            & apply(F,X1,Y1)
+            & apply(F,X2,Y2) )
+         => apply(S,Y2,Y1) ) ) 
+
+fof / isomorphism : 
+    ! [F,A,R,B,S] :
+      ( isomorphism(F,A,R,B,S)
+    <=> ( maps(F,A,B)
+        & one_to_one(F,A,B)
+        & ! [X1,Y1,X2,Y2] :
+            ( ( member(X1,A)
+              & member(Y1,B)
+              & member(X2,A)
+              & member(Y2,B)
+              & apply(F,X1,Y1)
+              & apply(F,X2,Y2) )
+           => ( apply(R,X1,X2)
+            <=> apply(S,Y1,Y2) ) ) ) ) 
+
+fof / disjoint : 
+    ! [A,B] :
+      ( disjoint(A,B)
+    <=> ~ ? [X] :
+            ( member(X,A)
+            & member(X,B) ) ) 
+
+fof / partition : 
+    ! [A,E] :
+      ( partition(A,E)
+    <=> ( ! [X] :
+            ( member(X,A)
+           => subset(X,E) )
+        & ! [X] :
+            ( member(X,E)
+           => ? [Y] :
+                ( member(Y,A)
+                & member(X,Y) ) )
+        & ! [X,Y] :
+            ( ( member(X,A)
+              & member(Y,A) )
+           => ( ? [Z] :
+                  ( member(Z,X)
+                  & member(Z,Y) )
+             => X = Y ) ) ) ) 
+
+fof / equivalence : 
+    ! [A,R] :
+      ( equivalence(R,A)
+    <=> ( ! [X] :
+            ( member(X,A)
+           => apply(R,X,X) )
+        & ! [X,Y] :
+            ( ( member(X,A)
+              & member(Y,A) )
+           => ( apply(R,X,Y)
+             => apply(R,Y,X) ) )
+        & ! [X,Y,Z] :
+            ( ( member(X,A)
+              & member(Y,A)
+              & member(Z,A) )
+           => ( ( apply(R,X,Y)
+                & apply(R,Y,Z) )
+             => apply(R,X,Z) ) ) ) ) 
+
+fof / equivalence_class : 
+    ! [R,E,A,X] :
+      ( member(X,equivalence_class(A,E,R))
+    <=> ( member(X,E)
+        & apply(R,A,X) ) ) 
+
+fof / pre_order : 
+    ! [R,E] :
+      ( pre_order(R,E)
+    <=> ( ! [X] :
+            ( member(X,E)
+           => apply(R,X,X) )
+        & ! [X,Y,Z] :
+            ( ( member(X,E)
+              & member(Y,E)
+              & member(Z,E) )
+           => ( ( apply(R,X,Y)
+                & apply(R,Y,Z) )
+             => apply(R,X,Z) ) ) ) ) 
+
+fof / order : 
+    ! [R,E] :
+      ( order(R,E)
+    <=> ( ! [X] :
+            ( member(X,E)
+           => apply(R,X,X) )
+        & ! [X,Y] :
+            ( ( member(X,E)
+              & member(Y,E) )
+           => ( ( apply(R,X,Y)
+                & apply(R,Y,X) )
+             => X = Y ) )
+        & ! [X,Y,Z] :
+            ( ( member(X,E)
+              & member(Y,E)
+              & member(Z,E) )
+           => ( ( apply(R,X,Y)
+                & apply(R,Y,Z) )
+             => apply(R,X,Z) ) ) ) ) 
+
+fof / total_order : 
+    ! [R,E] :
+      ( total_order(R,E)
+    <=> ( order(R,E)
+        & ! [X,Y] :
+            ( ( member(X,E)
+              & member(Y,E) )
+           => ( apply(R,X,Y)
+              | apply(R,Y,X) ) ) ) ) 
+
+fof / upper_bound : 
+    ! [R,E,M] :
+      ( upper_bound(M,R,E)
+    <=> ! [X] :
+          ( member(X,E)
+         => apply(R,X,M) ) ) 
+
+fof / lower_bound : 
+    ! [R,E,M] :
+      ( lower_bound(M,R,E)
+    <=> ! [X] :
+          ( member(X,E)
+         => apply(R,M,X) ) ) 
+
+fof / greatest : 
+    ! [R,E,M] :
+      ( greatest(M,R,E)
+    <=> ( member(M,E)
+        & ! [X] :
+            ( member(X,E)
+           => apply(R,X,M) ) ) ) 
+
+fof / least : 
+    ! [R,E,M] :
+      ( least(M,R,E)
+    <=> ( member(M,E)
+        & ! [X] :
+            ( member(X,E)
+           => apply(R,M,X) ) ) ) 
+
+fof / max : 
+    ! [R,E,M] :
+      ( max(M,R,E)
+    <=> ( member(M,E)
+        & ! [X] :
+            ( ( member(X,E)
+              & apply(R,M,X) )
+           => M = X ) ) ) 
+
+fof / min : 
+    ! [R,E,M] :
+      ( min(M,R,E)
+    <=> ( member(M,E)
+        & ! [X] :
+            ( ( member(X,E)
+              & apply(R,X,M) )
+           => M = X ) ) ) 
+
+fof / least_upper_bound : 
+    ! [A,X,R,E] :
+      ( least_upper_bound(A,X,R,E)
+    <=> ( member(A,X)
+        & upper_bound(A,R,X)
+        & ! [M] :
+            ( ( member(M,E)
+              & upper_bound(M,R,X) )
+           => apply(R,A,M) ) ) ) 
+
+fof / greatest_lower_bound : 
+    ! [A,X,R,E] :
+      ( greatest_lower_bound(A,X,R,E)
+    <=> ( member(A,X)
+        & lower_bound(A,R,X)
+        & ! [M] :
+            ( ( member(M,E)
+              & lower_bound(M,R,X) )
+           => apply(R,M,A) ) ) ) 
+
+fof / ordinal_number : 
+    ! [A] :
+      ( member(A,on)
+    <=> ( set(A)
+        & strict_well_order(member_predicate,A)
+        & ! [X] :
+            ( member(X,A)
+           => subset(X,A) ) ) ) 
+
+fof / strict_well_order : 
+    ! [R,E] :
+      ( strict_well_order(R,E)
+    <=> ( strict_order(R,E)
+        & ! [A] :
+            ( ( subset(A,E)
+              & ? [X] : member(X,A) )
+           => ? [Y] : least(Y,R,A) ) ) ) 
+
+fof / least : 
+    ! [R,E,M] :
+      ( least(M,R,E)
+    <=> ( member(M,E)
+        & ! [X] :
+            ( member(X,E)
+           => ( M = X
+              | apply(R,M,X) ) ) ) ) 
+
+fof / rel_member : 
+    ! [X,Y] :
+      ( apply(member_predicate,X,Y)
+    <=> member(X,Y) ) 
+
+fof / strict_order : 
+    ! [R,E] :
+      ( strict_order(R,E)
+    <=> ( ! [X,Y] :
+            ( ( member(X,E)
+              & member(Y,E) )
+           => ~ ( apply(R,X,Y)
+                & apply(R,Y,X) ) )
+        & ! [X,Y,Z] :
+            ( ( member(X,E)
+              & member(Y,E)
+              & member(Z,E) )
+           => ( ( apply(R,X,Y)
+                & apply(R,Y,Z) )
+             => apply(R,X,Z) ) ) ) ) 
+
+fof / set_member : 
+    ! [X] :
+      ( set(X)
+     => ! [Y] :
+          ( member(Y,X)
+         => set(Y) ) ) 
+
+fof / initial_segment : 
+    ! [X,R,A,Y] :
+      ( member(Y,initial_segment(X,R,A))
+    <=> ( member(Y,A)
+        & apply(R,Y,X) ) ) 
+
+fof / successor : 
+    ! [A,X] :
+      ( member(X,suc(A))
+    <=> member(X,union(A,singleton(A))) )

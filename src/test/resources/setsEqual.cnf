@@ -1,0 +1,4 @@
+subsets_are_set_equal_sets :
+    ( ~ subset(Set1,Set2)
+    | ~ subset(Set2,Set1)
+    | equal_sets(Set2,Set1) )

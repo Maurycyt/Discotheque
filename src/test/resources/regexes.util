@@ -1,0 +1,16 @@
+Remove tff and thf formulas
+    (tff|thf)[^.]*.\s*
+
+
+Remove comments
+    %[^\n]*
+
+
+Remove double empty lines
+    \n\s*\n\s*
+    \n\n
+
+Convert a cnf or fof formula in TPTP to custom format.
+    (cnf|fof)\((\w*),\w*,([^.]*)[\s\S]\)\.
+    $1 / $2 : $3
+

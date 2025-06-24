@@ -1,0 +1,1287 @@
+cnf / membership_in_subsets : 
+    ( ~ member(Element,Subset)
+    | ~ subset(Subset,Superset)
+    | member(Element,Superset) ) 
+
+cnf / subsets_axiom1 : 
+    ( subset(Subset,Superset)
+    | member(member_of_1_not_of_2(Subset,Superset),Subset) ) 
+
+cnf / subsets_axiom2 : 
+    ( ~ member(member_of_1_not_of_2(Subset,Superset),Superset)
+    | subset(Subset,Superset) ) 
+
+cnf / set_equal_sets_are_subsets1 : 
+    ( ~ equal_sets(Subset,Superset)
+    | subset(Subset,Superset) ) 
+
+cnf / set_equal_sets_are_subsets2 : 
+    ( ~ equal_sets(Superset,Subset)
+    | subset(Subset,Superset) ) 
+
+cnf / subsets_are_set_equal_sets : 
+    ( ~ subset(Set1,Set2)
+    | ~ subset(Set2,Set1)
+    | equal_sets(Set2,Set1) ) 
+
+cnf / member_of_union_is_member_of_one_set : 
+    ( ~ union(Set1,Set2,Union)
+    | ~ member(Element,Union)
+    | member(Element,Set1)
+    | member(Element,Set2) ) 
+
+cnf / member_of_set1_is_member_of_union : 
+    ( ~ union(Set1,Set2,Union)
+    | ~ member(Element,Set1)
+    | member(Element,Union) ) 
+
+cnf / member_of_set2_is_member_of_union : 
+    ( ~ union(Set1,Set2,Union)
+    | ~ member(Element,Set2)
+    | member(Element,Union) ) 
+
+cnf / union_axiom1 : 
+    ( union(Set1,Set2,Union)
+    | member(g(Set1,Set2,Union),Set1)
+    | member(g(Set1,Set2,Union),Set2)
+    | member(g(Set1,Set2,Union),Union) ) 
+
+cnf / union_axiom2 : 
+    ( ~ member(g(Set1,Set2,Union),Set1)
+    | ~ member(g(Set1,Set2,Union),Union)
+    | union(Set1,Set2,Union) ) 
+
+cnf / union_axiom3 : 
+    ( ~ member(g(Set1,Set2,Union),Set2)
+    | ~ member(g(Set1,Set2,Union),Union)
+    | union(Set1,Set2,Union) ) 
+
+cnf / member_of_intersection_is_member_of_set1 : 
+    ( ~ intersection(Set1,Set2,Intersection)
+    | ~ member(Element,Intersection)
+    | member(Element,Set1) ) 
+
+cnf / member_of_intersection_is_member_of_set2 : 
+    ( ~ intersection(Set1,Set2,Intersection)
+    | ~ member(Element,Intersection)
+    | member(Element,Set2) ) 
+
+cnf / member_of_both_is_member_of_intersection : 
+    ( ~ intersection(Set1,Set2,Intersection)
+    | ~ member(Element,Set2)
+    | ~ member(Element,Set1)
+    | member(Element,Intersection) ) 
+
+cnf / intersection_axiom1 : 
+    ( member(h(Set1,Set2,Intersection),Intersection)
+    | intersection(Set1,Set2,Intersection)
+    | member(h(Set1,Set2,Intersection),Set1) ) 
+
+cnf / intersection_axiom2 : 
+    ( member(h(Set1,Set2,Intersection),Intersection)
+    | intersection(Set1,Set2,Intersection)
+    | member(h(Set1,Set2,Intersection),Set2) ) 
+
+cnf / intersection_axiom3 : 
+    ( ~ member(h(Set1,Set2,Intersection),Intersection)
+    | ~ member(h(Set1,Set2,Intersection),Set2)
+    | ~ member(h(Set1,Set2,Intersection),Set1)
+    | intersection(Set1,Set2,Intersection) ) 
+
+cnf / member_of_difference : 
+    ( ~ difference(Set1,Set2,Difference)
+    | ~ member(Element,Difference)
+    | member(Element,Set1) ) 
+
+cnf / not_member_of_difference : 
+    ( ~ member(Element,Set1)
+    | ~ member(Element,Set2)
+    | ~ difference(A_set,Set1,Set2) ) 
+
+cnf / member_of_difference_or_set2 : 
+    ( ~ member(Element,Set1)
+    | ~ difference(Set1,Set2,Difference)
+    | member(Element,Difference)
+    | member(Element,Set2) ) 
+
+cnf / difference_axiom2 : 
+    ( difference(Set1,Set2,Difference)
+    | member(k(Set1,Set2,Difference),Set1)
+    | member(k(Set1,Set2,Difference),Difference) ) 
+
+cnf / difference_axiom1 : 
+    ( ~ member(k(Set1,Set2,Difference),Set2)
+    | member(k(Set1,Set2,Difference),Difference)
+    | difference(Set1,Set2,Difference) ) 
+
+cnf / difference_axiom3 : 
+    ( ~ member(k(Set1,Set2,Difference),Difference)
+    | ~ member(k(Set1,Set2,Difference),Set1)
+    | member(k(Set1,Set2,Difference),Set2)
+    | difference(Set1,Set2,Difference) ) 
+
+cnf / empty_set : 
+    ~ member(X,empty_set) 
+
+cnf / membership_in_subsets : 
+    ( ~ member(Element,Subset)
+    | ~ subset(Subset,Superset)
+    | member(Element,Superset) ) 
+
+cnf / subsets_axiom1 : 
+    ( subset(Subset,Superset)
+    | member(member_of_1_not_of_2(Subset,Superset),Subset) ) 
+
+cnf / subsets_axiom2 : 
+    ( ~ member(member_of_1_not_of_2(Subset,Superset),Superset)
+    | subset(Subset,Superset) ) 
+
+cnf / member_of_set_or_complement : 
+    ( member(X,Xs)
+    | member(X,complement(Xs)) ) 
+
+cnf / not_member_of_set_and_complement : 
+    ( ~ member(X,Xs)
+    | ~ member(X,complement(Xs)) ) 
+
+cnf / member_of_set1_is_member_of_union : 
+    ( ~ member(X,Xs)
+    | member(X,union(Xs,Ys)) ) 
+
+cnf / member_of_set2_is_member_of_union : 
+    ( ~ member(X,Ys)
+    | member(X,union(Xs,Ys)) ) 
+
+cnf / member_of_union_is_member_of_one_set : 
+    ( ~ member(X,union(Xs,Ys))
+    | member(X,Xs)
+    | member(X,Ys) ) 
+
+cnf / member_of_both_is_member_of_intersection : 
+    ( ~ member(X,Xs)
+    | ~ member(X,Ys)
+    | member(X,intersection(Xs,Ys)) ) 
+
+cnf / member_of_intersection_is_member_of_set1 : 
+    ( ~ member(X,intersection(Xs,Ys))
+    | member(X,Xs) ) 
+
+cnf / member_of_intersection_is_member_of_set2 : 
+    ( ~ member(X,intersection(Xs,Ys))
+    | member(X,Ys) ) 
+
+cnf / set_equal_sets_are_subsets1 : 
+    ( ~ equal_sets(Subset,Superset)
+    | subset(Subset,Superset) ) 
+
+cnf / set_equal_sets_are_subsets2 : 
+    ( ~ equal_sets(Superset,Subset)
+    | subset(Subset,Superset) ) 
+
+cnf / subsets_are_set_equal_sets : 
+    ( ~ subset(Set1,Set2)
+    | ~ subset(Set2,Set1)
+    | equal_sets(Set2,Set1) ) 
+
+cnf / reflexivity_for_set_equal : 
+    equal_sets(Xs,Xs) 
+
+cnf / symmetry_for_set_equal : 
+    ( ~ equal_sets(Xs,Ys)
+    | equal_sets(Ys,Xs) ) 
+
+cnf / transitivity_for_set_equal : 
+    ( ~ equal_sets(Xs,Ys)
+    | ~ equal_sets(Ys,Zs)
+    | equal_sets(Xs,Zs) ) 
+
+cnf / reflexivity_for_equal_elements : 
+    equal_elements(X,X) 
+
+cnf / symmetry_for_equal_elements : 
+    ( ~ equal_elements(X,Y)
+    | equal_elements(Y,X) ) 
+
+cnf / transitivity_for_equal_elements : 
+    ( ~ equal_elements(X,Y)
+    | ~ equal_elements(Y,Z)
+    | equal_elements(X,Z) ) 
+
+cnf / a2 : 
+    ( ~ member(X,Y)
+    | little_set(X) ) 
+
+cnf / extensionality1 : 
+    ( little_set(f1(X,Y))
+    | X = Y ) 
+
+cnf / extensionality2 : 
+    ( member(f1(X,Y),X)
+    | member(f1(X,Y),Y)
+    | X = Y ) 
+
+cnf / extensionality3 : 
+    ( ~ member(f1(X,Y),X)
+    | ~ member(f1(X,Y),Y)
+    | X = Y ) 
+
+cnf / non_ordered_pair1 : 
+    ( ~ member(U,non_ordered_pair(X,Y))
+    | U = X
+    | U = Y ) 
+
+cnf / non_ordered_pair2 : 
+    ( member(U,non_ordered_pair(X,Y))
+    | ~ little_set(U)
+    | U != X ) 
+
+cnf / non_ordered_pair3 : 
+    ( member(U,non_ordered_pair(X,Y))
+    | ~ little_set(U)
+    | U != Y ) 
+
+cnf / non_ordered_pair4 : 
+    little_set(non_ordered_pair(X,Y)) 
+
+cnf / singleton_set : 
+    singleton_set(X) = non_ordered_pair(X,X) 
+
+cnf / ordered_pair : 
+    ordered_pair(X,Y) = non_ordered_pair(singleton_set(X),non_ordered_pair(X,Y)) 
+
+cnf / ordered_pair_predicate1 : 
+    ( ~ ordered_pair_predicate(X)
+    | little_set(f2(X)) ) 
+
+cnf / ordered_pair_predicate2 : 
+    ( ~ ordered_pair_predicate(X)
+    | little_set(f3(X)) ) 
+
+cnf / ordered_pair_predicate3 : 
+    ( ~ ordered_pair_predicate(X)
+    | X = ordered_pair(f2(X),f3(X)) ) 
+
+cnf / ordered_pair_predicate4 : 
+    ( ordered_pair_predicate(X)
+    | ~ little_set(Y)
+    | ~ little_set(Z)
+    | X != ordered_pair(Y,Z) ) 
+
+cnf / first1 : 
+    ( ~ member(Z,first(X))
+    | little_set(f4(Z,X)) ) 
+
+cnf / first2 : 
+    ( ~ member(Z,first(X))
+    | little_set(f5(Z,X)) ) 
+
+cnf / first3 : 
+    ( ~ member(Z,first(X))
+    | X = ordered_pair(f4(Z,X),f5(Z,X)) ) 
+
+cnf / first4 : 
+    ( ~ member(Z,first(X))
+    | member(Z,f4(Z,X)) ) 
+
+cnf / first5 : 
+    ( member(Z,first(X))
+    | ~ little_set(U)
+    | ~ little_set(V)
+    | X != ordered_pair(U,V)
+    | ~ member(Z,U) ) 
+
+cnf / second1 : 
+    ( ~ member(Z,second(X))
+    | little_set(f6(Z,X)) ) 
+
+cnf / second2 : 
+    ( ~ member(Z,second(X))
+    | little_set(f7(Z,X)) ) 
+
+cnf / second3 : 
+    ( ~ member(Z,second(X))
+    | X = ordered_pair(f6(Z,X),f7(Z,X)) ) 
+
+cnf / second4 : 
+    ( ~ member(Z,second(X))
+    | member(Z,f7(Z,X)) ) 
+
+cnf / second5 : 
+    ( member(Z,second(X))
+    | ~ little_set(U)
+    | ~ little_set(V)
+    | X != ordered_pair(U,V)
+    | ~ member(Z,V) ) 
+
+cnf / element_relation1 : 
+    ( ~ member(Z,estin)
+    | ordered_pair_predicate(Z) ) 
+
+cnf / element_relation2 : 
+    ( ~ member(Z,estin)
+    | member(first(Z),second(Z)) ) 
+
+cnf / element_relation3 : 
+    ( member(Z,estin)
+    | ~ little_set(Z)
+    | ~ ordered_pair_predicate(Z)
+    | ~ member(first(Z),second(Z)) ) 
+
+cnf / intersection1 : 
+    ( ~ member(Z,intersection(X,Y))
+    | member(Z,X) ) 
+
+cnf / intersection2 : 
+    ( ~ member(Z,intersection(X,Y))
+    | member(Z,Y) ) 
+
+cnf / intersection3 : 
+    ( member(Z,intersection(X,Y))
+    | ~ member(Z,X)
+    | ~ member(Z,Y) ) 
+
+cnf / complement1 : 
+    ( ~ member(Z,complement(X))
+    | ~ member(Z,X) ) 
+
+cnf / complement2 : 
+    ( member(Z,complement(X))
+    | ~ little_set(Z)
+    | member(Z,X) ) 
+
+cnf / union : 
+    union(X,Y) = complement(intersection(complement(X),complement(Y))) 
+
+cnf / domain1 : 
+    ( ~ member(Z,domain_of(X))
+    | ordered_pair_predicate(f8(Z,X)) ) 
+
+cnf / domain2 : 
+    ( ~ member(Z,domain_of(X))
+    | member(f8(Z,X),X) ) 
+
+cnf / domain3 : 
+    ( ~ member(Z,domain_of(X))
+    | Z = first(f8(Z,X)) ) 
+
+cnf / domain4 : 
+    ( member(Z,domain_of(X))
+    | ~ little_set(Z)
+    | ~ ordered_pair_predicate(Xp)
+    | ~ member(Xp,X)
+    | Z != first(Xp) ) 
+
+cnf / cross_product1 : 
+    ( ~ member(Z,cross_product(X,Y))
+    | ordered_pair_predicate(Z) ) 
+
+cnf / cross_product2 : 
+    ( ~ member(Z,cross_product(X,Y))
+    | member(first(Z),X) ) 
+
+cnf / cross_product3 : 
+    ( ~ member(Z,cross_product(X,Y))
+    | member(second(Z),Y) ) 
+
+cnf / cross_product4 : 
+    ( member(Z,cross_product(X,Y))
+    | ~ little_set(Z)
+    | ~ ordered_pair_predicate(Z)
+    | ~ member(first(Z),X)
+    | ~ member(second(Z),Y) ) 
+
+cnf / converse1 : 
+    ( ~ member(Z,converse(X))
+    | ordered_pair_predicate(Z) ) 
+
+cnf / converse2 : 
+    ( ~ member(Z,converse(X))
+    | member(ordered_pair(second(Z),first(Z)),X) ) 
+
+cnf / converse3 : 
+    ( member(Z,converse(X))
+    | ~ little_set(Z)
+    | ~ ordered_pair_predicate(Z)
+    | ~ member(ordered_pair(second(Z),first(Z)),X) ) 
+
+cnf / rotate_right1 : 
+    ( ~ member(Z,rotate_right(X))
+    | little_set(f9(Z,X)) ) 
+
+cnf / rotate_right2 : 
+    ( ~ member(Z,rotate_right(X))
+    | little_set(f10(Z,X)) ) 
+
+cnf / rotate_right3 : 
+    ( ~ member(Z,rotate_right(X))
+    | little_set(f11(Z,X)) ) 
+
+cnf / rotate_right4 : 
+    ( ~ member(Z,rotate_right(X))
+    | Z = ordered_pair(f9(Z,X),ordered_pair(f10(Z,X),f11(Z,X))) ) 
+
+cnf / rotate_right5 : 
+    ( ~ member(Z,rotate_right(X))
+    | member(ordered_pair(f10(Z,X),ordered_pair(f11(Z,X),f9(Z,X))),X) ) 
+
+cnf / rotate_right6 : 
+    ( member(Z,rotate_right(X))
+    | ~ little_set(Z)
+    | ~ little_set(U)
+    | ~ little_set(V)
+    | ~ little_set(W)
+    | Z != ordered_pair(U,ordered_pair(V,W))
+    | ~ member(ordered_pair(V,ordered_pair(W,U)),X) ) 
+
+cnf / flip_range1 : 
+    ( ~ member(Z,flip_range_of(X))
+    | little_set(f12(Z,X)) ) 
+
+cnf / flip_range2 : 
+    ( ~ member(Z,flip_range_of(X))
+    | little_set(f13(Z,X)) ) 
+
+cnf / flip_range3 : 
+    ( ~ member(Z,flip_range_of(X))
+    | little_set(f14(Z,X)) ) 
+
+cnf / flip_range4 : 
+    ( ~ member(Z,flip_range_of(X))
+    | Z = ordered_pair(f12(Z,X),ordered_pair(f13(Z,X),f14(Z,X))) ) 
+
+cnf / flip_range5 : 
+    ( ~ member(Z,flip_range_of(X))
+    | member(ordered_pair(f12(Z,X),ordered_pair(f14(Z,X),f13(Z,X))),X) ) 
+
+cnf / flip_range6 : 
+    ( member(Z,flip_range_of(X))
+    | ~ little_set(Z)
+    | ~ little_set(U)
+    | ~ little_set(V)
+    | ~ little_set(W)
+    | Z != ordered_pair(U,ordered_pair(V,W))
+    | ~ member(ordered_pair(U,ordered_pair(W,V)),X) ) 
+
+cnf / successor : 
+    successor(X) = union(X,singleton_set(X)) 
+
+cnf / empty_set : 
+    ~ member(Z,empty_set) 
+
+cnf / universal_set : 
+    ( member(Z,universal_set)
+    | ~ little_set(Z) ) 
+
+cnf / infinity1 : 
+    little_set(infinity) 
+
+cnf / infinity2 : 
+    member(empty_set,infinity) 
+
+cnf / infinity3 : 
+    ( ~ member(X,infinity)
+    | member(successor(X),infinity) ) 
+
+cnf / sigma1 : 
+    ( ~ member(Z,sigma(X))
+    | member(f16(Z,X),X) ) 
+
+cnf / sigma2 : 
+    ( ~ member(Z,sigma(X))
+    | member(Z,f16(Z,X)) ) 
+
+cnf / sigma3 : 
+    ( member(Z,sigma(X))
+    | ~ member(Y,X)
+    | ~ member(Z,Y) ) 
+
+cnf / sigma4 : 
+    ( ~ little_set(U)
+    | little_set(sigma(U)) ) 
+
+cnf / subset1 : 
+    ( ~ subset(X,Y)
+    | ~ member(U,X)
+    | member(U,Y) ) 
+
+cnf / subset2 : 
+    ( subset(X,Y)
+    | member(f17(X,Y),X) ) 
+
+cnf / subset3 : 
+    ( subset(X,Y)
+    | ~ member(f17(X,Y),Y) ) 
+
+cnf / proper_subset1 : 
+    ( ~ proper_subset(X,Y)
+    | subset(X,Y) ) 
+
+cnf / proper_subset2 : 
+    ( ~ proper_subset(X,Y)
+    | X != Y ) 
+
+cnf / proper_subset3 : 
+    ( proper_subset(X,Y)
+    | ~ subset(X,Y)
+    | X = Y ) 
+
+cnf / powerset1 : 
+    ( ~ member(Z,powerset(X))
+    | subset(Z,X) ) 
+
+cnf / powerset2 : 
+    ( member(Z,powerset(X))
+    | ~ little_set(Z)
+    | ~ subset(Z,X) ) 
+
+cnf / powerset3 : 
+    ( ~ little_set(U)
+    | little_set(powerset(U)) ) 
+
+cnf / relation1 : 
+    ( ~ relation(Z)
+    | ~ member(X,Z)
+    | ordered_pair_predicate(X) ) 
+
+cnf / relation2 : 
+    ( relation(Z)
+    | member(f18(Z),Z) ) 
+
+cnf / relation3 : 
+    ( relation(Z)
+    | ~ ordered_pair_predicate(f18(Z)) ) 
+
+cnf / single_valued_set1 : 
+    ( ~ single_valued_set(X)
+    | ~ little_set(U)
+    | ~ little_set(V)
+    | ~ little_set(W)
+    | ~ member(ordered_pair(U,V),X)
+    | ~ member(ordered_pair(U,W),X)
+    | V = W ) 
+
+cnf / single_valued_set2 : 
+    ( single_valued_set(X)
+    | little_set(f19(X)) ) 
+
+cnf / single_valued_set3 : 
+    ( single_valued_set(X)
+    | little_set(f20(X)) ) 
+
+cnf / single_valued_set4 : 
+    ( single_valued_set(X)
+    | little_set(f21(X)) ) 
+
+cnf / single_valued_set5 : 
+    ( single_valued_set(X)
+    | member(ordered_pair(f19(X),f20(X)),X) ) 
+
+cnf / single_valued_set6 : 
+    ( single_valued_set(X)
+    | member(ordered_pair(f19(X),f21(X)),X) ) 
+
+cnf / single_valued_set7 : 
+    ( single_valued_set(X)
+    | f20(X) != f21(X) ) 
+
+cnf / function1 : 
+    ( ~ function(Xf)
+    | relation(Xf) ) 
+
+cnf / function2 : 
+    ( ~ function(Xf)
+    | single_valued_set(Xf) ) 
+
+cnf / function3 : 
+    ( function(Xf)
+    | ~ relation(Xf)
+    | ~ single_valued_set(Xf) ) 
+
+cnf / image_and_substitution1 : 
+    ( ~ member(Z,image(X,Xf))
+    | ordered_pair_predicate(f22(Z,X,Xf)) ) 
+
+cnf / image_and_substitution2 : 
+    ( ~ member(Z,image(X,Xf))
+    | member(f22(Z,X,Xf),Xf) ) 
+
+cnf / image_and_substitution3 : 
+    ( ~ member(Z,image(X,Xf))
+    | member(first(f22(Z,X,Xf)),X) ) 
+
+cnf / image_and_substitution4 : 
+    ( ~ member(Z,image(X,Xf))
+    | second(f22(Z,X,Xf)) = Z ) 
+
+cnf / image_and_substitution5 : 
+    ( member(Z,image(X,Xf))
+    | ~ little_set(Z)
+    | ~ ordered_pair_predicate(Y)
+    | ~ member(Y,Xf)
+    | ~ member(first(Y),X)
+    | second(Y) != Z ) 
+
+cnf / image_and_substitution6 : 
+    ( ~ little_set(X)
+    | ~ function(Xf)
+    | little_set(image(X,Xf)) ) 
+
+cnf / disjoint1 : 
+    ( ~ disjoint(X,Y)
+    | ~ member(U,X)
+    | ~ member(U,Y) ) 
+
+cnf / disjoint2 : 
+    ( disjoint(X,Y)
+    | member(f23(X,Y),X) ) 
+
+cnf / disjoint3 : 
+    ( disjoint(X,Y)
+    | member(f23(X,Y),Y) ) 
+
+cnf / regularity1 : 
+    ( X = empty_set
+    | member(f24(X),X) ) 
+
+cnf / regularity2 : 
+    ( X = empty_set
+    | disjoint(f24(X),X) ) 
+
+cnf / choice1 : 
+    function(f25) 
+
+cnf / choice2 : 
+    ( ~ little_set(X)
+    | X = empty_set
+    | member(f26(X),X) ) 
+
+cnf / choice3 : 
+    ( ~ little_set(X)
+    | X = empty_set
+    | member(ordered_pair(X,f26(X)),f25) ) 
+
+cnf / range_of1 : 
+    ( ~ member(Z,range_of(X))
+    | ordered_pair_predicate(f27(Z,X)) ) 
+
+cnf / range_of2 : 
+    ( ~ member(Z,range_of(X))
+    | member(f27(Z,X),X) ) 
+
+cnf / range_of3 : 
+    ( ~ member(Z,range_of(X))
+    | Z = second(f27(Z,X)) ) 
+
+cnf / range_of4 : 
+    ( member(Z,range_of(X))
+    | ~ little_set(Z)
+    | ~ ordered_pair_predicate(Xp)
+    | ~ member(Xp,X)
+    | Z != second(Xp) ) 
+
+cnf / identity_relation1 : 
+    ( ~ member(Z,identity_relation)
+    | ordered_pair_predicate(Z) ) 
+
+cnf / identity_relation2 : 
+    ( ~ member(Z,identity_relation)
+    | first(Z) = second(Z) ) 
+
+cnf / identity_relation3 : 
+    ( member(Z,identity_relation)
+    | ~ little_set(Z)
+    | ~ ordered_pair_predicate(Z)
+    | first(Z) != second(Z) ) 
+
+cnf / restrict : 
+    restrict(X,Y) = intersection(X,cross_product(Y,universal_set)) 
+
+cnf / one_to_one_function1 : 
+    ( ~ one_to_one_function(Xf)
+    | function(Xf) ) 
+
+cnf / one_to_one_function2 : 
+    ( ~ one_to_one_function(Xf)
+    | function(converse(Xf)) ) 
+
+cnf / one_to_one_function3 : 
+    ( one_to_one_function(Xf)
+    | ~ function(Xf)
+    | ~ function(converse(Xf)) ) 
+
+cnf / apply1 : 
+    ( ~ member(Z,apply(Xf,Y))
+    | ordered_pair_predicate(f28(Z,Xf,Y)) ) 
+
+cnf / apply2 : 
+    ( ~ member(Z,apply(Xf,Y))
+    | member(f28(Z,Xf,Y),Xf) ) 
+
+cnf / apply3 : 
+    ( ~ member(Z,apply(Xf,Y))
+    | first(f28(Z,Xf,Y)) = Y ) 
+
+cnf / apply4 : 
+    ( ~ member(Z,apply(Xf,Y))
+    | member(Z,second(f28(Z,Xf,Y))) ) 
+
+cnf / apply5 : 
+    ( member(Z,apply(Xf,Y))
+    | ~ ordered_pair_predicate(W)
+    | ~ member(W,Xf)
+    | first(W) != Y
+    | ~ member(Z,second(W)) ) 
+
+cnf / apply_to_two_arguments : 
+    apply_to_two_arguments(Xf,X,Y) = apply(Xf,ordered_pair(X,Y)) 
+
+cnf / maps1 : 
+    ( ~ maps(Xf,X,Y)
+    | function(Xf) ) 
+
+cnf / maps2 : 
+    ( ~ maps(Xf,X,Y)
+    | domain_of(Xf) = X ) 
+
+cnf / maps3 : 
+    ( ~ maps(Xf,X,Y)
+    | subset(range_of(Xf),Y) ) 
+
+cnf / maps4 : 
+    ( maps(Xf,X,Y)
+    | ~ function(Xf)
+    | domain_of(Xf) != X
+    | ~ subset(range_of(Xf),Y) ) 
+
+cnf / closed1 : 
+    ( ~ closed(Xs,Xf)
+    | little_set(Xs) ) 
+
+cnf / closed2 : 
+    ( ~ closed(Xs,Xf)
+    | little_set(Xf) ) 
+
+cnf / closed3 : 
+    ( ~ closed(Xs,Xf)
+    | maps(Xf,cross_product(Xs,Xs),Xs) ) 
+
+cnf / closed4 : 
+    ( closed(Xs,Xf)
+    | ~ little_set(Xs)
+    | ~ little_set(Xf)
+    | ~ maps(Xf,cross_product(Xs,Xs),Xs) ) 
+
+cnf / compose1 : 
+    ( ~ member(Z,compose(Xf,Xg))
+    | little_set(f29(Z,Xf,Xg)) ) 
+
+cnf / compose2 : 
+    ( ~ member(Z,compose(Xf,Xg))
+    | little_set(f30(Z,Xf,Xg)) ) 
+
+cnf / compose3 : 
+    ( ~ member(Z,compose(Xf,Xg))
+    | little_set(f31(Z,Xf,Xg)) ) 
+
+cnf / compose4 : 
+    ( ~ member(Z,compose(Xf,Xg))
+    | Z = ordered_pair(f29(Z,Xf,Xg),f30(Z,Xf,Xg)) ) 
+
+cnf / compose5 : 
+    ( ~ member(Z,compose(Xf,Xg))
+    | member(ordered_pair(f29(Z,Xf,Xg),f31(Z,Xf,Xg)),Xf) ) 
+
+cnf / compose6 : 
+    ( ~ member(Z,compose(Xf,Xg))
+    | member(ordered_pair(f31(Z,Xf,Xg),f30(Z,Xf,Xg)),Xg) ) 
+
+cnf / compose7 : 
+    ( member(Z,compose(Xf,Xg))
+    | ~ little_set(Z)
+    | ~ little_set(X)
+    | ~ little_set(Y)
+    | ~ little_set(W)
+    | Z != ordered_pair(X,Y)
+    | ~ member(ordered_pair(X,W),Xf)
+    | ~ member(ordered_pair(W,Y),Xg) ) 
+
+cnf / homomorphism1 : 
+    ( ~ homomorphism(Xh,Xs1,Xf1,Xs2,Xf2)
+    | closed(Xs1,Xf1) ) 
+
+cnf / homomorphism2 : 
+    ( ~ homomorphism(Xh,Xs1,Xf1,Xs2,Xf2)
+    | closed(Xs2,Xf2) ) 
+
+cnf / homomorphism3 : 
+    ( ~ homomorphism(Xh,Xs1,Xf1,Xs2,Xf2)
+    | maps(Xh,Xs1,Xs2) ) 
+
+cnf / homomorphism4 : 
+    ( ~ homomorphism(Xh,Xs1,Xf1,Xs2,Xf2)
+    | ~ member(X,Xs1)
+    | ~ member(Y,Xs1)
+    | apply(Xh,apply_to_two_arguments(Xf1,X,Y)) = apply_to_two_arguments(Xf2,apply(Xh,X),apply(Xh,Y)) ) 
+
+cnf / homomorphism5 : 
+    ( homomorphism(Xh,Xs1,Xf1,Xs2,Xf2)
+    | ~ closed(Xs1,Xf1)
+    | ~ closed(Xs2,Xf2)
+    | ~ maps(Xh,Xs1,Xs2)
+    | member(f32(Xh,Xs1,Xf1,Xs2,Xf2),Xs1) ) 
+
+cnf / homomorphism6 : 
+    ( homomorphism(Xh,Xs1,Xf1,Xs2,Xf2)
+    | ~ closed(Xs1,Xf1)
+    | ~ closed(Xs2,Xf2)
+    | ~ maps(Xh,Xs1,Xs2)
+    | member(f33(Xh,Xs1,Xf1,Xs2,Xf2),Xs1) ) 
+
+cnf / homomorphism7 : 
+    ( homomorphism(Xh,Xs1,Xf1,Xs2,Xf2)
+    | ~ closed(Xs1,Xf1)
+    | ~ closed(Xs2,Xf2)
+    | ~ maps(Xh,Xs1,Xs2)
+    | apply(Xh,apply_to_two_arguments(Xf1,f32(Xh,Xs1,Xf1,Xs2,Xf2),f33(Xh,Xs1,Xf1,Xs2,Xf2))) != apply_to_two_arguments(Xf2,apply(Xh,f32(Xh,Xs1,Xf1,Xs2,Xf2)),apply(Xh,f33(Xh,Xs1,Xf1,Xs2,Xf2))) ) 
+
+cnf / subclass_members : 
+    ( ~ subclass(X,Y)
+    | ~ member(U,X)
+    | member(U,Y) ) 
+
+cnf / not_subclass_members1 : 
+    ( member(not_subclass_element(X,Y),X)
+    | subclass(X,Y) ) 
+
+cnf / not_subclass_members2 : 
+    ( ~ member(not_subclass_element(X,Y),Y)
+    | subclass(X,Y) ) 
+
+cnf / class_elements_are_sets : 
+    subclass(X,universal_class) 
+
+cnf / equal_implies_subclass1 : 
+    ( X != Y
+    | subclass(X,Y) ) 
+
+cnf / equal_implies_subclass2 : 
+    ( X != Y
+    | subclass(Y,X) ) 
+
+cnf / subclass_implies_equal : 
+    ( ~ subclass(X,Y)
+    | ~ subclass(Y,X)
+    | X = Y ) 
+
+cnf / unordered_pair_member : 
+    ( ~ member(U,unordered_pair(X,Y))
+    | U = X
+    | U = Y ) 
+
+cnf / unordered_pair2 : 
+    ( ~ member(X,universal_class)
+    | member(X,unordered_pair(X,Y)) ) 
+
+cnf / unordered_pair3 : 
+    ( ~ member(Y,universal_class)
+    | member(Y,unordered_pair(X,Y)) ) 
+
+cnf / unordered_pairs_in_universal : 
+    member(unordered_pair(X,Y),universal_class) 
+
+cnf / singleton_set : 
+    unordered_pair(X,X) = singleton(X) 
+
+cnf / ordered_pair : 
+    unordered_pair(singleton(X),unordered_pair(X,singleton(Y))) = ordered_pair(X,Y) 
+
+cnf / cartesian_product1 : 
+    ( ~ member(ordered_pair(U,V),cross_product(X,Y))
+    | member(U,X) ) 
+
+cnf / cartesian_product2 : 
+    ( ~ member(ordered_pair(U,V),cross_product(X,Y))
+    | member(V,Y) ) 
+
+cnf / cartesian_product3 : 
+    ( ~ member(U,X)
+    | ~ member(V,Y)
+    | member(ordered_pair(U,V),cross_product(X,Y)) ) 
+
+cnf / cartesian_product4 : 
+    ( ~ member(Z,cross_product(X,Y))
+    | ordered_pair(first(Z),second(Z)) = Z ) 
+
+cnf / element_relation1 : 
+    subclass(element_relation,cross_product(universal_class,universal_class)) 
+
+cnf / element_relation2 : 
+    ( ~ member(ordered_pair(X,Y),element_relation)
+    | member(X,Y) ) 
+
+cnf / element_relation3 : 
+    ( ~ member(ordered_pair(X,Y),cross_product(universal_class,universal_class))
+    | ~ member(X,Y)
+    | member(ordered_pair(X,Y),element_relation) ) 
+
+cnf / intersection1 : 
+    ( ~ member(Z,intersection(X,Y))
+    | member(Z,X) ) 
+
+cnf / intersection2 : 
+    ( ~ member(Z,intersection(X,Y))
+    | member(Z,Y) ) 
+
+cnf / intersection3 : 
+    ( ~ member(Z,X)
+    | ~ member(Z,Y)
+    | member(Z,intersection(X,Y)) ) 
+
+cnf / complement1 : 
+    ( ~ member(Z,complement(X))
+    | ~ member(Z,X) ) 
+
+cnf / complement2 : 
+    ( ~ member(Z,universal_class)
+    | member(Z,complement(X))
+    | member(Z,X) ) 
+
+cnf / union : 
+    complement(intersection(complement(X),complement(Y))) = union(X,Y) 
+
+cnf / symmetric_difference : 
+    intersection(complement(intersection(X,Y)),complement(intersection(complement(X),complement(Y)))) = symmetric_difference(X,Y) 
+
+cnf / restriction1 : 
+    intersection(Xr,cross_product(X,Y)) = restrict(Xr,X,Y) 
+
+cnf / restriction2 : 
+    intersection(cross_product(X,Y),Xr) = restrict(Xr,X,Y) 
+
+cnf / domain1 : 
+    ( restrict(X,singleton(Z),universal_class) != null_class
+    | ~ member(Z,domain_of(X)) ) 
+
+cnf / domain2 : 
+    ( ~ member(Z,universal_class)
+    | restrict(X,singleton(Z),universal_class) = null_class
+    | member(Z,domain_of(X)) ) 
+
+cnf / rotate1 : 
+    subclass(rotate(X),cross_product(cross_product(universal_class,universal_class),universal_class)) 
+
+cnf / rotate2 : 
+    ( ~ member(ordered_pair(ordered_pair(U,V),W),rotate(X))
+    | member(ordered_pair(ordered_pair(V,W),U),X) ) 
+
+cnf / rotate3 : 
+    ( ~ member(ordered_pair(ordered_pair(V,W),U),X)
+    | ~ member(ordered_pair(ordered_pair(U,V),W),cross_product(cross_product(universal_class,universal_class),universal_class))
+    | member(ordered_pair(ordered_pair(U,V),W),rotate(X)) ) 
+
+cnf / flip1 : 
+    subclass(flip(X),cross_product(cross_product(universal_class,universal_class),universal_class)) 
+
+cnf / flip2 : 
+    ( ~ member(ordered_pair(ordered_pair(U,V),W),flip(X))
+    | member(ordered_pair(ordered_pair(V,U),W),X) ) 
+
+cnf / flip3 : 
+    ( ~ member(ordered_pair(ordered_pair(V,U),W),X)
+    | ~ member(ordered_pair(ordered_pair(U,V),W),cross_product(cross_product(universal_class,universal_class),universal_class))
+    | member(ordered_pair(ordered_pair(U,V),W),flip(X)) ) 
+
+cnf / inverse : 
+    domain_of(flip(cross_product(Y,universal_class))) = inverse(Y) 
+
+cnf / range_of : 
+    domain_of(inverse(Z)) = range_of(Z) 
+
+cnf / domain : 
+    first(not_subclass_element(restrict(Z,X,singleton(Y)),null_class)) = domain(Z,X,Y) 
+
+cnf / range : 
+    second(not_subclass_element(restrict(Z,singleton(X),Y),null_class)) = range(Z,X,Y) 
+
+cnf / image : 
+    range_of(restrict(Xr,X,universal_class)) = image(Xr,X) 
+
+cnf / successor : 
+    union(X,singleton(X)) = successor(X) 
+
+cnf / successor_relation1 : 
+    subclass(successor_relation,cross_product(universal_class,universal_class)) 
+
+cnf / successor_relation2 : 
+    ( ~ member(ordered_pair(X,Y),successor_relation)
+    | successor(X) = Y ) 
+
+cnf / successor_relation3 : 
+    ( successor(X) != Y
+    | ~ member(ordered_pair(X,Y),cross_product(universal_class,universal_class))
+    | member(ordered_pair(X,Y),successor_relation) ) 
+
+cnf / inductive1 : 
+    ( ~ inductive(X)
+    | member(null_class,X) ) 
+
+cnf / inductive2 : 
+    ( ~ inductive(X)
+    | subclass(image(successor_relation,X),X) ) 
+
+cnf / inductive3 : 
+    ( ~ member(null_class,X)
+    | ~ subclass(image(successor_relation,X),X)
+    | inductive(X) ) 
+
+cnf / omega_is_inductive1 : 
+    inductive(omega) 
+
+cnf / omega_is_inductive2 : 
+    ( ~ inductive(Y)
+    | subclass(omega,Y) ) 
+
+cnf / omega_in_universal : 
+    member(omega,universal_class) 
+
+cnf / sum_class_definition : 
+    domain_of(restrict(element_relation,universal_class,X)) = sum_class(X) 
+
+cnf / sum_class2 : 
+    ( ~ member(X,universal_class)
+    | member(sum_class(X),universal_class) ) 
+
+cnf / power_class_definition : 
+    complement(image(element_relation,complement(X))) = power_class(X) 
+
+cnf / power_class2 : 
+    ( ~ member(U,universal_class)
+    | member(power_class(U),universal_class) ) 
+
+cnf / compose1 : 
+    subclass(compose(Yr,Xr),cross_product(universal_class,universal_class)) 
+
+cnf / compose2 : 
+    ( ~ member(ordered_pair(Y,Z),compose(Yr,Xr))
+    | member(Z,image(Yr,image(Xr,singleton(Y)))) ) 
+
+cnf / compose3 : 
+    ( ~ member(Z,image(Yr,image(Xr,singleton(Y))))
+    | ~ member(ordered_pair(Y,Z),cross_product(universal_class,universal_class))
+    | member(ordered_pair(Y,Z),compose(Yr,Xr)) ) 
+
+cnf / single_valued_class1 : 
+    ( ~ single_valued_class(X)
+    | subclass(compose(X,inverse(X)),identity_relation) ) 
+
+cnf / single_valued_class2 : 
+    ( ~ subclass(compose(X,inverse(X)),identity_relation)
+    | single_valued_class(X) ) 
+
+cnf / function1 : 
+    ( ~ function(Xf)
+    | subclass(Xf,cross_product(universal_class,universal_class)) ) 
+
+cnf / function2 : 
+    ( ~ function(Xf)
+    | subclass(compose(Xf,inverse(Xf)),identity_relation) ) 
+
+cnf / function3 : 
+    ( ~ subclass(Xf,cross_product(universal_class,universal_class))
+    | ~ subclass(compose(Xf,inverse(Xf)),identity_relation)
+    | function(Xf) ) 
+
+cnf / replacement : 
+    ( ~ function(Xf)
+    | ~ member(X,universal_class)
+    | member(image(Xf,X),universal_class) ) 
+
+cnf / regularity1 : 
+    ( X = null_class
+    | member(regular(X),X) ) 
+
+cnf / regularity2 : 
+    ( X = null_class
+    | intersection(X,regular(X)) = null_class ) 
+
+cnf / apply : 
+    sum_class(image(Xf,singleton(Y))) = apply(Xf,Y) 
+
+cnf / choice1 : 
+    function(choice) 
+
+cnf / choice2 : 
+    ( ~ member(Y,universal_class)
+    | Y = null_class
+    | member(apply(choice,Y),Y) ) 
+
+cnf / one_to_one1 : 
+    ( ~ one_to_one(Xf)
+    | function(Xf) ) 
+
+cnf / one_to_one2 : 
+    ( ~ one_to_one(Xf)
+    | function(inverse(Xf)) ) 
+
+cnf / one_to_one3 : 
+    ( ~ function(inverse(Xf))
+    | ~ function(Xf)
+    | one_to_one(Xf) ) 
+
+cnf / subset_relation : 
+    intersection(cross_product(universal_class,universal_class),intersection(cross_product(universal_class,universal_class),complement(compose(complement(element_relation),inverse(element_relation))))) = subset_relation 
+
+cnf / identity_relation : 
+    intersection(inverse(subset_relation),subset_relation) = identity_relation 
+
+cnf / diagonalisation : 
+    complement(domain_of(intersection(Xr,identity_relation))) = diagonalise(Xr) 
+
+cnf / cantor_class : 
+    intersection(domain_of(X),diagonalise(compose(inverse(element_relation),X))) = cantor(X) 
+
+cnf / operation1 : 
+    ( ~ operation(Xf)
+    | function(Xf) ) 
+
+cnf / operation2 : 
+    ( ~ operation(Xf)
+    | cross_product(domain_of(domain_of(Xf)),domain_of(domain_of(Xf))) = domain_of(Xf) ) 
+
+cnf / operation3 : 
+    ( ~ operation(Xf)
+    | subclass(range_of(Xf),domain_of(domain_of(Xf))) ) 
+
+cnf / operation4 : 
+    ( ~ function(Xf)
+    | cross_product(domain_of(domain_of(Xf)),domain_of(domain_of(Xf))) != domain_of(Xf)
+    | ~ subclass(range_of(Xf),domain_of(domain_of(Xf)))
+    | operation(Xf) ) 
+
+cnf / compatible1 : 
+    ( ~ compatible(Xh,Xf1,Xf2)
+    | function(Xh) ) 
+
+cnf / compatible2 : 
+    ( ~ compatible(Xh,Xf1,Xf2)
+    | domain_of(domain_of(Xf1)) = domain_of(Xh) ) 
+
+cnf / compatible3 : 
+    ( ~ compatible(Xh,Xf1,Xf2)
+    | subclass(range_of(Xh),domain_of(domain_of(Xf2))) ) 
+
+cnf / compatible4 : 
+    ( ~ function(Xh)
+    | domain_of(domain_of(Xf1)) != domain_of(Xh)
+    | ~ subclass(range_of(Xh),domain_of(domain_of(Xf2)))
+    | compatible(Xh,Xf1,Xf2) ) 
+
+cnf / homomorphism1 : 
+    ( ~ homomorphism(Xh,Xf1,Xf2)
+    | operation(Xf1) ) 
+
+cnf / homomorphism2 : 
+    ( ~ homomorphism(Xh,Xf1,Xf2)
+    | operation(Xf2) ) 
+
+cnf / homomorphism3 : 
+    ( ~ homomorphism(Xh,Xf1,Xf2)
+    | compatible(Xh,Xf1,Xf2) ) 
+
+cnf / homomorphism4 : 
+    ( ~ homomorphism(Xh,Xf1,Xf2)
+    | ~ member(ordered_pair(X,Y),domain_of(Xf1))
+    | apply(Xf2,ordered_pair(apply(Xh,X),apply(Xh,Y))) = apply(Xh,apply(Xf1,ordered_pair(X,Y))) ) 
+
+cnf / homomorphism5 : 
+    ( ~ operation(Xf1)
+    | ~ operation(Xf2)
+    | ~ compatible(Xh,Xf1,Xf2)
+    | member(ordered_pair(not_homomorphism1(Xh,Xf1,Xf2),not_homomorphism2(Xh,Xf1,Xf2)),domain_of(Xf1))
+    | homomorphism(Xh,Xf1,Xf2) ) 
+
+cnf / homomorphism6 : 
+    ( ~ operation(Xf1)
+    | ~ operation(Xf2)
+    | ~ compatible(Xh,Xf1,Xf2)
+    | apply(Xf2,ordered_pair(apply(Xh,not_homomorphism1(Xh,Xf1,Xf2)),apply(Xh,not_homomorphism2(Xh,Xf1,Xf2)))) != apply(Xh,apply(Xf1,ordered_pair(not_homomorphism1(Xh,Xf1,Xf2),not_homomorphism2(Xh,Xf1,Xf2))))
+    | homomorphism(Xh,Xf1,Xf2) ) 
+
+cnf / compose_class_definition1 : 
+    subclass(compose_class(X),cross_product(universal_class,universal_class)) 
+
+cnf / compose_class_definition2 : 
+    ( ~ member(ordered_pair(Y,Z),compose_class(X))
+    | compose(X,Y) = Z ) 
+
+cnf / compose_class_definition3 : 
+    ( ~ member(ordered_pair(Y,Z),cross_product(universal_class,universal_class))
+    | compose(X,Y) != Z
+    | member(ordered_pair(Y,Z),compose_class(X)) ) 
+
+cnf / definition_of_composition_function1 : 
+    subclass(composition_function,cross_product(universal_class,cross_product(universal_class,universal_class))) 
+
+cnf / definition_of_composition_function2 : 
+    ( ~ member(ordered_pair(X,ordered_pair(Y,Z)),composition_function)
+    | compose(X,Y) = Z ) 
+
+cnf / definition_of_composition_function3 : 
+    ( ~ member(ordered_pair(X,Y),cross_product(universal_class,universal_class))
+    | member(ordered_pair(X,ordered_pair(Y,compose(X,Y))),composition_function) ) 
+
+cnf / definition_of_domain_relation1 : 
+    subclass(domain_relation,cross_product(universal_class,universal_class)) 
+
+cnf / definition_of_domain_relation2 : 
+    ( ~ member(ordered_pair(X,Y),domain_relation)
+    | domain_of(X) = Y ) 
+
+cnf / definition_of_domain_relation3 : 
+    ( ~ member(X,universal_class)
+    | member(ordered_pair(X,domain_of(X)),domain_relation) ) 
+
+cnf / single_valued_term_defn1 : 
+    first(not_subclass_element(compose(X,inverse(X)),identity_relation)) = single_valued1(X) 
+
+cnf / single_valued_term_defn2 : 
+    second(not_subclass_element(compose(X,inverse(X)),identity_relation)) = single_valued2(X) 
+
+cnf / single_valued_term_defn3 : 
+    domain(X,image(inverse(X),singleton(single_valued1(X))),single_valued2(X)) = single_valued3(X) 
+
+cnf / compose_can_define_singleton : 
+    intersection(complement(compose(element_relation,complement(identity_relation))),element_relation) = singleton_relation 
+
+cnf / application_function_defn1 : 
+    subclass(application_function,cross_product(universal_class,cross_product(universal_class,universal_class))) 
+
+cnf / application_function_defn2 : 
+    ( ~ member(ordered_pair(X,ordered_pair(Y,Z)),application_function)
+    | member(Y,domain_of(X)) ) 
+
+cnf / application_function_defn3 : 
+    ( ~ member(ordered_pair(X,ordered_pair(Y,Z)),application_function)
+    | apply(X,Y) = Z ) 
+
+cnf / application_function_defn4 : 
+    ( ~ member(ordered_pair(X,ordered_pair(Y,Z)),cross_product(universal_class,cross_product(universal_class,universal_class)))
+    | ~ member(Y,domain_of(X))
+    | member(ordered_pair(X,ordered_pair(Y,apply(X,Y))),application_function) ) 
+
+cnf / maps1 : 
+    ( ~ maps(Xf,X,Y)
+    | function(Xf) ) 
+
+cnf / maps2 : 
+    ( ~ maps(Xf,X,Y)
+    | domain_of(Xf) = X ) 
+
+cnf / maps3 : 
+    ( ~ maps(Xf,X,Y)
+    | subclass(range_of(Xf),Y) ) 
+
+cnf / maps4 : 
+    ( ~ function(Xf)
+    | ~ subclass(range_of(Xf),Y)
+    | maps(Xf,domain_of(Xf),Y) )

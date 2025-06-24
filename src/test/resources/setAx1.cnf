@@ -1,0 +1,129 @@
+% SET001-0.ax --------------------------------------------------------------------------------------
+
+membership_in_subsets :
+    ( ~ member(Element,Subset)
+    | ~ subset(Subset,Superset)
+    | member(Element,Superset) )
+
+subsets_axiom1 : 
+    ( subset(Subset,Superset)
+    | member(member_of_1_not_of_2(Subset,Superset),Subset) )
+
+subsets_axiom2 : 
+    ( ~ member(member_of_1_not_of_2(Subset,Superset),Superset)
+    | subset(Subset,Superset) )
+
+set_equal_sets_are_subsets1 : 
+    ( ~ equal_sets(Subset,Superset)
+    | subset(Subset,Superset) )
+
+set_equal_sets_are_subsets2 : 
+    ( ~ equal_sets(Superset,Subset)
+    | subset(Subset,Superset) )
+
+subsets_are_set_equal_sets : 
+    ( ~ subset(Set1,Set2)
+    | ~ subset(Set2,Set1)
+    | equal_sets(Set2,Set1) )
+
+% SET001-1.ax --------------------------------------------------------------------------------------
+
+member_of_union_is_member_of_one_set :
+    ( ~ union(Set1,Set2,Union)
+    | ~ member(Element,Union)
+    | member(Element,Set1)
+    | member(Element,Set2) )
+
+member_of_set1_is_member_of_union :
+    ( ~ union(Set1,Set2,Union)
+    | ~ member(Element,Set1)
+    | member(Element,Union) )
+
+member_of_set2_is_member_of_union :
+    ( ~ union(Set1,Set2,Union)
+    | ~ member(Element,Set2)
+    | member(Element,Union) )
+
+union_axiom1 :
+    ( union(Set1,Set2,Union)
+    | member(g(Set1,Set2,Union),Set1)
+    | member(g(Set1,Set2,Union),Set2)
+    | member(g(Set1,Set2,Union),Union) )
+
+union_axiom2 :
+    ( ~ member(g(Set1,Set2,Union),Set1)
+    | ~ member(g(Set1,Set2,Union),Union)
+    | union(Set1,Set2,Union) )
+
+union_axiom3 :
+    ( ~ member(g(Set1,Set2,Union),Set2)
+    | ~ member(g(Set1,Set2,Union),Union)
+    | union(Set1,Set2,Union) )
+
+% SET001-2.ax --------------------------------------------------------------------------------------
+
+member_of_intersection_is_member_of_set1 :
+    ( ~ intersection(Set1,Set2,Intersection)
+    | ~ member(Element,Intersection)
+    | member(Element,Set1) )
+
+member_of_intersection_is_member_of_set2 :
+    ( ~ intersection(Set1,Set2,Intersection)
+    | ~ member(Element,Intersection)
+    | member(Element,Set2) )
+
+member_of_both_is_member_of_intersection :
+    ( ~ intersection(Set1,Set2,Intersection)
+    | ~ member(Element,Set2)
+    | ~ member(Element,Set1)
+    | member(Element,Intersection) )
+
+intersection_axiom1 :
+    ( member(h(Set1,Set2,Intersection),Intersection)
+    | intersection(Set1,Set2,Intersection)
+    | member(h(Set1,Set2,Intersection),Set1) )
+
+intersection_axiom2 :
+    ( member(h(Set1,Set2,Intersection),Intersection)
+    | intersection(Set1,Set2,Intersection)
+    | member(h(Set1,Set2,Intersection),Set2) )
+
+intersection_axiom3 :
+    ( ~ member(h(Set1,Set2,Intersection),Intersection)
+    | ~ member(h(Set1,Set2,Intersection),Set2)
+    | ~ member(h(Set1,Set2,Intersection),Set1)
+    | intersection(Set1,Set2,Intersection) )
+
+% SET001-3.ax --------------------------------------------------------------------------------------
+
+member_of_difference :
+    ( ~ difference(Set1,Set2,Difference)
+    | ~ member(Element,Difference)
+    | member(Element,Set1) )
+
+not_member_of_difference :
+    ( ~ member(Element,Set1)
+    | ~ member(Element,Set2)
+    | ~ difference(A_set,Set1,Set2) )
+
+member_of_difference_or_set2 :
+    ( ~ member(Element,Set1)
+    | ~ difference(Set1,Set2,Difference)
+    | member(Element,Difference)
+    | member(Element,Set2) )
+
+difference_axiom2 :
+    ( difference(Set1,Set2,Difference)
+    | member(k(Set1,Set2,Difference),Set1)
+    | member(k(Set1,Set2,Difference),Difference) )
+
+difference_axiom1 :
+    ( ~ member(k(Set1,Set2,Difference),Set2)
+    | member(k(Set1,Set2,Difference),Difference)
+    | difference(Set1,Set2,Difference) )
+
+difference_axiom3 :
+    ( ~ member(k(Set1,Set2,Difference),Difference)
+    | ~ member(k(Set1,Set2,Difference),Set1)
+    | member(k(Set1,Set2,Difference),Set2)
+    | difference(Set1,Set2,Difference) )
