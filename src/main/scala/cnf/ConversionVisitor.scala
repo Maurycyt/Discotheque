@@ -1,27 +1,29 @@
 package cnf
 
+import common.*
 import grammar.CNF.CNFBaseVisitor
 import grammar.CNF.CNFParser.*
+
 import scala.jdk.CollectionConverters.*
 
 class ConversionVisitor extends CNFBaseVisitor[AnyRef] {
-	override def visitCnfFormulaList(ctx: CnfFormulaListContext): Vector[CNFFormula[Term]] =
-		ctx.cnfFormula.asScala.toVector.map(_.accept(this).asInstanceOf[CNFFormula[Term]])
+	override def visitCnfFormulaList(ctx: CnfFormulaListContext): Vector[Formula[Term]] =
+		ctx.cnfFormula.asScala.toVector.map(_.accept(this).asInstanceOf[Formula[Term]])
 
-	override def visitCnfFormula(ctx: CnfFormulaContext): CNFFormula[Term] =
-		CNFFormula(
+	override def visitCnfFormula(ctx: CnfFormulaContext): Formula[Term] =
+		Formula(
 			ctx.name.getText,
-			ctx.wrappedCnfClause.cnfClause.accept(this).asInstanceOf[CNFClause[Term]]
+			ctx.wrappedCnfClause.cnfClause.accept(this).asInstanceOf[Clause[Term]]
 		)
 
-	override def visitCnfClause(ctx: CnfClauseContext): CNFClause[Term] =
-		CNFClause(ctx.cnfLiteral.asScala.toSet.map(_.accept(this).asInstanceOf[CNFLiteral[Term]]))
+	override def visitCnfClause(ctx: CnfClauseContext): Clause[Term] =
+		Clause(ctx.cnfLiteral.asScala.toSet.map(_.accept(this).asInstanceOf[Literal[Term]]))
 
 	override def visitLNamed(ctx: LNamedContext): AnyRef =
-		CNFLiteral(ctx.Tilde != null, ctx.relation.accept(this).asInstanceOf[Relation[Term]])
+		Literal(ctx.Tilde != null, ctx.relation.accept(this).asInstanceOf[Relation[Term]])
 
 	override def visitLComp(ctx: LCompContext): AnyRef =
-		CNFLiteral(
+		Literal(
 			ctx.comp.getText == "!=",
 			Relation(
 				"=",

@@ -1,6 +1,6 @@
-package cnf
+package common
 
-// Sub-relational elements of a CNF formula.
+// Sub-relational elements of a theorem-like formula.
 
 sealed trait Term
 
@@ -16,19 +16,19 @@ case class Functor(name: String, args: Vector[Term]) extends Term {
 	override def toString: String = name ++ args.mkString("(", ",", ")")
 }
 
-// Higher-level elements of a CNF formula.
+// Higher-level elements of a formula.
 // Parametrised with what they allow as arguments to relations.
-// CNFFormula[Term] allows functors, but CNFFormula[Variable] does not.
+// Formula[Term] allows functors, but Formula[Variable] does not.
 
-case class CNFFormula[T <: Term](name: String, clause: CNFClause[T]) {
+case class Formula[T <: Term](name: String, clause: Clause[T]) {
 	override def toString: String = s"$name: $clause"
 }
 
-case class CNFClause[T <: Term](literals: Set[CNFLiteral[T]]) {
+case class Clause[T <: Term](literals: Set[Literal[T]]) {
 	override def toString: String = literals.mkString(" | ")
 }
 
-case class CNFLiteral[T <: Term](negated: Boolean, relation: Relation[T]) {
+case class Literal[T <: Term](negated: Boolean, relation: Relation[T]) {
 	override def toString: String = {
 		s"${if negated then "~" else ""}$relation"
 	}
@@ -40,7 +40,7 @@ case class Relation[T <: Term](name: String, args: Vector[T]) {
 	override def toString: String = s"$name${args.mkString("(", ",", ")")}"
 }
 
-def collectVarNames[T <: Term](clause: CNFClause[T]): Set[String] = {
+def collectVarNames[T <: Term](clause: Clause[T]): Set[String] = {
 	clause.literals.flatMap(_.relation.args.flatMap(collectVarNames))
 }
 
