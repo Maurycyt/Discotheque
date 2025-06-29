@@ -89,7 +89,8 @@ class ClauseMatcher(
 						// Recurse to search further
 						val newScore = newMatchingContext.score
 						val (newMatching, newResultScore) = backtrackSearch(newMatchingContext, newScore, cfg)
-						if newResultScore.score(cfg) > result._2.score(cfg) then result = (newMatching, newResultScore)
+						if newResultScore.score(cfg) > result._2
+							.score(cfg) then result = (newMatching, newResultScore)
 					}
 				}
 			}
@@ -110,13 +111,15 @@ class ClauseMatcher(
 	 * @return The variable translations, the best matching context and its score delta.
 	 */
 	def findBestMatching: BestMatchingResult = {
-		val (bestMatchingContext, score) = backtrackSearch(firstMatchingContext, Score(
-			totalRelations = firstMatchingContext.totalRelations,
-			validRelations = 0,
-			invalidRelations = 0,
-			variableUnions = 0,
-			quantifierClashes = 0
-		), cfg)
+		val (bestMatchingContext, score) = backtrackSearch(
+			firstMatchingContext, Score(
+				totalRelations = firstMatchingContext.totalRelations,
+				validRelations = 0,
+				invalidRelations = 0,
+				variableUnions = 0,
+				quantifierClashes = 0
+			), cfg
+		)
 		BestMatchingResult(
 			name, (clause0, clause1), (variableIDs0, variableIDs1), bestMatchingContext,
 			score
@@ -145,14 +148,16 @@ def findBestMatching(
 
 def describeBestMatching(
 	bestMatching: ClauseMatcher.BestMatchingResult,
+	cfg: ScoringConfig,
 ): Unit = {
 	val ClauseMatcher.BestMatchingResult(
-	name, (clause0, clause1), (variableIDs0, variableIDs1), bestMatchingContext, scoreDelta
+	name, (clause0, clause1), (variableIDs0, variableIDs1), bestMatchingContext, score
 	) = bestMatching
 	val quotientMatching = bestMatchingContext.quotientMatching
 	val numUnions = quotientMatching.getSize - quotientMatching.getQuotientsSize
 	println(
-		s"Best matching score delta: $scoreDelta ($numUnions union${if numUnions == 1 then "" else "s"})."
+		s"Best matching score: $score " +
+			s"(weighted total: ${score.score(cfg)}, relative: ${score.relativeScore(cfg)})."
 	)
 	println(s"\t$name")
 	println("First clause after equating:")

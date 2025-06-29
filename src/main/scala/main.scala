@@ -88,7 +88,7 @@ def main(args: String*): Unit = {
 
 	bestMatchings.sortBy(-_.score.score(cfg)).take(3).filterNot(_.score.score(cfg) <= 0)
 		.foreach { result =>
-			describeBestMatching(result)
+			describeBestMatching(result, cfg)
 		}
 
 	println(s"Processing took ${
