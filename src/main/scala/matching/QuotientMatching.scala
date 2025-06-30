@@ -40,6 +40,8 @@ class QuotientMatching(val n0: Int, val n1: Int) {
 
 	def getQuotientsSize: Int = quotient(0).getQuotientSize + quotient(1).getQuotientSize
 
+	def getQuotient(side: Int): FindAndUnion = quotient(side)
+
 	def find(side: Int)(x: Int): Int = quotient(side).find(x)
 
 	def getMatching(side: Int)(x: Int): Option[Int] = matched(side)(x)

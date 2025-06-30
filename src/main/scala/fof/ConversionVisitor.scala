@@ -73,8 +73,11 @@ class FormulaToClauseVisitor(
 	override def aggregateResult(
 		aggregate: (Clause[Term], Map[String, String]),
 		nextResult: (Clause[Term], Map[String, String]),
-	): (Clause[Term], Map[String, String]) =
-		(Clause(aggregate._1.literals ++ nextResult._1.literals), nextResult._2)
+	): (Clause[Term], Map[String, String]) = {
+		val newQuantifiers = aggregate._1.quantifiers ++ nextResult._1.quantifiers
+		val newLiterals = aggregate._1.literals ++ nextResult._1.literals
+		(Clause(newQuantifiers, newLiterals), nextResult._2)
+	}
 
 	override def visitFQuantified(ctx: FQuantifiedContext): (Clause[Term], Map[String, String]) =
 		ctx.formula.accept(withNames(ctx.variables.variable.asScala.toSet.map(_.name.getText)))
@@ -107,12 +110,12 @@ class FormulaToClauseVisitor(
 		val newLiteral = ctx.literal.accept(LiteralVisitor(nameMapping)).asInstanceOf[Literal[Term]]
 		mode match {
 			case Mode.Positive =>
-				(Clause(Set(newLiteral)), nameMapping)
+				(Clause(Map.empty, Set(newLiteral)), nameMapping)
 			case Mode.Negative =>
-				(Clause(Set(newLiteral.copy(negated = !newLiteral.negated))), nameMapping)
+				(Clause(Map.empty, Set(newLiteral.copy(negated = !newLiteral.negated))), nameMapping)
 			case Mode.Both =>
 				(
-					Clause(Set(newLiteral, newLiteral.copy(negated = !newLiteral.negated))),
+					Clause(Map.empty, Set(newLiteral, newLiteral.copy(negated = !newLiteral.negated))),
 					nameMapping
 				)
 		}

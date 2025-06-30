@@ -146,6 +146,35 @@ def findBestMatching(
 	ClauseMatcher(name, clause0, clause1, cfg).findBestMatching
 }
 
+def applyUnification(
+	clause: Clause[Variable],
+	fnu: FindAndUnion,
+	variableIDs: Map[String, Int],
+	variablePrefix: String,
+): Clause[Variable] = {
+	val variableRenaming = variableIDs.map { (name, id) => (name, variablePrefix + fnu.find(id)) }
+	val variableClasses = variableIDs.keySet.groupBy(variableRenaming)
+	val combinedQuantifiers = variableClasses.map { (className, names) =>
+		(
+			className,
+			names.map(clause.quantifiers).reduce((q1, q2) => q1.combine(q2))
+		)
+	}
+	Clause(
+		combinedQuantifiers,
+		clause.literals.map {
+			literal =>
+				Literal(
+					negated = literal.negated,
+					relation = Relation(
+						name = literal.relation.name,
+						args = literal.relation.args.map(v => Variable(variableRenaming(v.name)))
+					)
+				)
+		}
+	)
+}
+
 def describeBestMatching(
 	bestMatching: ClauseMatcher.BestMatchingResult,
 	cfg: ScoringConfig,
@@ -161,33 +190,9 @@ def describeBestMatching(
 	)
 	println(s"\t$name")
 	println("First clause after equating:")
-	println("\t" + Clause(clause0.literals.map {
-		literal =>
-			Literal(
-				negated = literal.negated,
-				relation = Relation(
-					name = literal.relation.name,
-					args = literal.relation.args
-						.map(v => Variable("X" + quotientMatching.find(0)(variableIDs0(v.name))))
-				)
-			)
-	}
-	)
-	)
+	println("\t" + applyUnification(clause0, quotientMatching.getQuotient(0), variableIDs0, "X"))
 	println("Second clause after equating:")
-	println("\t" + Clause(clause1.literals.map {
-		literal =>
-			Literal(
-				negated = literal.negated,
-				relation = Relation(
-					name = literal.relation.name,
-					args = literal.relation.args
-						.map(v => Variable("Y" + quotientMatching.find(1)(variableIDs1(v.name))))
-				)
-			)
-	}
-	)
-	)
+	println("\t" + applyUnification(clause1, quotientMatching.getQuotient(1), variableIDs1, "X"))
 	println("Variable matching:")
 	for xID <- 0 until quotientMatching.n0 do {
 		if quotientMatching.find(0)(xID) == xID then {

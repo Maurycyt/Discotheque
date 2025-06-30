@@ -17,7 +17,14 @@ class ConversionVisitor extends CNFBaseVisitor[AnyRef] {
 		)
 
 	override def visitCnfClause(ctx: CnfClauseContext): Clause[Term] =
-		Clause(ctx.cnfLiteral.asScala.toSet.map(_.accept(this).asInstanceOf[Literal[Term]]))
+		val unquantified = Clause(
+			Map.empty, ctx.cnfLiteral.asScala.toSet.map(_.accept(this).asInstanceOf[Literal[Term]])
+		)
+		val variableNames = collectVarNames(unquantified)
+		Clause(
+			Map.from(variableNames.map((_, Quantifier.None))),
+			ctx.cnfLiteral.asScala.toSet.map(_.accept(this).asInstanceOf[Literal[Term]])
+		)
 
 	override def visitLNamed(ctx: LNamedContext): AnyRef =
 		Literal(ctx.Tilde != null, ctx.relation.accept(this).asInstanceOf[Relation[Term]])

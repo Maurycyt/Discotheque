@@ -29,7 +29,9 @@ def eliminateFunctors(clause: Clause[Term]): Clause[Variable] = {
 				newUsedNames
 			)
 	}
-	Clause(resultLiterals)
+
+	// Quantifiers do not change. New variables are not quantified.
+	Clause(clause.quantifiers, resultLiterals)
 }
 
 // Eliminates functors in a list of terms (arguments to a functor or relation).

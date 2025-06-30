@@ -24,8 +24,14 @@ case class Formula[T <: Term](name: String, clause: Clause[T]) {
 	override def toString: String = s"$name: $clause"
 }
 
-case class Clause[T <: Term](literals: Set[Literal[T]]) {
-	override def toString: String = literals.mkString(" | ")
+case class Clause[T <: Term](quantifiers: Map[String, Quantifier], literals: Set[Literal[T]]) {
+	override def toString: String = {
+		import Quantifier.*
+		(for (quantifier <- Seq(None, Universal, Existential, Clashing)) yield {
+			val symbol = quantifier.toString
+			symbol ++ quantifiers.toSeq.filter(_._2 == quantifier).map(_._1).mkString("(", ",", ")")
+		}).mkString("") ++ " " ++ literals.mkString(" | ")
+	}
 }
 
 case class Literal[T <: Term](negated: Boolean, relation: Relation[T]) {
