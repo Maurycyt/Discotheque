@@ -11,7 +11,7 @@ class ConversionVisitor extends FOFBaseVisitor[Vector[Formula[Term]]] {
 		ctx.fofFormula.asScala.toVector.map { ctx =>
 			Formula(
 				ctx.name.getText,
-				ctx.formula.accept(this).asInstanceOf[Clause[Term]]
+				ctx.formula.accept(FormulaToClauseVisitor())._1
 			)
 		}
 }
@@ -70,7 +70,7 @@ class FormulaToClauseVisitor(
 		withMapping(newNameMapping)
 	}
 
-	override def aggregateResult(
+	private def customCombineResult(
 		aggregate: (Clause[Term], Map[String, String]),
 		nextResult: (Clause[Term], Map[String, String]),
 	): (Clause[Term], Map[String, String]) = {
@@ -79,28 +79,38 @@ class FormulaToClauseVisitor(
 		(Clause(newQuantifiers, newLiterals), nextResult._2)
 	}
 
-	override def visitFQuantified(ctx: FQuantifiedContext): (Clause[Term], Map[String, String]) =
-		ctx.formula.accept(withNames(ctx.variables.variable.asScala.toSet.map(_.name.getText)))
-		// TODO: add quantifier colors to IR and provide them here
+	override def visitFWrapped(ctx: FWrappedContext): (Clause[Term], Map[String, String]) =
+		ctx.formula.accept(this)
+
+	override def visitFQuantified(ctx: FQuantifiedContext): (Clause[Term], Map[String, String]) = {
+		val newNames = ctx.variables.variable.asScala.toSet.map(_.name.getText)
+		val (clause, nameMapping) = ctx.formula.accept(withNames(newNames))
+		val quantifier =
+			if ctx.quantifier.getText == "!"
+			then common.Quantifier.Universal else common.Quantifier.Existential
+		val newQuantifiers = clause.quantifiers
+			++ newNames.map { name => (nameMapping(name), quantifier) }.toMap
+		(clause.copy(quantifiers = newQuantifiers), nameMapping)
+	}
 
 	override def visitFBinary(ctx: FBinaryContext): (Clause[Term], Map[String, String]) =
 		ctx.BinaryOp.getSymbol.getText match {
 			case "&" | "|" =>
 				val r0 = ctx.formula(0).accept(this)
 				val r1 = ctx.formula(1).accept(withMapping(r0._2))
-				aggregateResult(r0, r1)
+				customCombineResult(r0, r1)
 			case "=>" =>
 				val r0 = ctx.formula(0).accept(notThis)
 				val r1 = ctx.formula(1).accept(withMapping(r0._2))
-				aggregateResult(r0, r1)
+				customCombineResult(r0, r1)
 			case "<=" =>
 				val r0 = ctx.formula(0).accept(this)
 				val r1 = ctx.formula(1).accept(notThis.withMapping(r0._2))
-				aggregateResult(r0, r1)
+				customCombineResult(r0, r1)
 			case "<=>" =>
 				val r0 = ctx.formula(0).accept(bothThis)
 				val r1 = ctx.formula(1).accept(bothThis.withMapping(r0._2))
-				aggregateResult(r0, r1)
+				customCombineResult(r0, r1)
 		}
 
 	override def visitFNegated(ctx: FNegatedContext): (Clause[Term], Map[String, String]) =
@@ -152,4 +162,14 @@ class LiteralVisitor(nameMapping: Map[String, String]) extends FOFBaseVisitor[An
 
 	override def visitTVariable(ctx: TVariableContext): Term =
 		Variable(nameMapping(ctx.variable.name.getText))
+}
+
+class VariableCollector extends FOFBaseVisitor[Set[String]] {
+	override def defaultResult = Set.empty[String]
+
+	override def aggregateResult(aggregate: Set[String], nextResult: Set[String]): Set[String] = {
+		aggregate ++ nextResult
+	}
+
+	override def visitTVariable(ctx: TVariableContext): Set[String] = Set(ctx.variable.name.getText)
 }

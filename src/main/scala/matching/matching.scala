@@ -13,6 +13,11 @@ class ClauseMatcher(
 	private val n0 = variableIDs0.size
 	private val n1 = variableIDs1.size
 
+	private val quantifiers0 = Array.fill[Quantifier](n0)(Quantifier.Universal)
+	variableIDs0.foreach { (name, id) => quantifiers0(id) = clause0.quantifiers(name) }
+	private val quantifiers1 = Array.fill[Quantifier](n1)(Quantifier.Universal)
+	variableIDs1.foreach { (name, id) => quantifiers1(id) = clause1.quantifiers(name) }
+
 	private val commonSignedPredicates =
 		clause0.literals.map(_.signedPredicate) & clause1.literals.map(_.signedPredicate)
 
@@ -35,9 +40,7 @@ class ClauseMatcher(
 		.map((_, argsList) => Array.fill(argsList.length)(false))
 
 	private val firstMatchingContext = MatchingContext(
-		QuotientMatching(n0, n1),
-		Array.fill(n0)(Quantifier.Universal),
-		Array.fill(n1)(Quantifier.Universal),
+		QuotientMatching(n0, n1, quantifiers0, quantifiers1),
 		normalisedRelations0,
 		normalisedRelations1,
 		clause0.literals.size + clause1.literals.size,

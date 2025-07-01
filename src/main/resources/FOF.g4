@@ -6,10 +6,10 @@ fofFormula : 'fof' '/' name=LowerIdent ':' formula ;
 
 formula
     : '(' formula ')'                                       # FWrapped
-    | quantifier=Quantifier '[' variables ']' ':' formula   # FQuantified
-    | formula BinaryOp formula                              # FBinary
-    | Tilde formula                                         # FNegated
     | literal                                               # FLiteral
+    | Tilde formula                                         # FNegated
+    | formula BinaryOp formula                              # FBinary
+    | quantifier=Quantifier '[' variables ']' ':' formula   # FQuantified
     ;
 
 literal

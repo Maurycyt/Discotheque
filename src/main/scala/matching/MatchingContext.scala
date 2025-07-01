@@ -26,15 +26,11 @@ object MatchingContext {
  * because really how many clauses of the entry should be matched with one clause of the query?
  *
  * @param quotientMatching     The quotient matching structure that keeps track of equivalence classes.
- * @param quantifiers0         Array of quantifiers for the first clause.
- * @param quantifiers1         Array of quantifiers for the second clause.
  * @param normalisedRelations0 List of relations of the first clause, grouped by predicate.
  * @param normalisedRelations1 List of relations of the second clause, grouped by predicate.
  */
 class MatchingContext(
-	val quotientMatching: QuotientMatching,
-	val quantifiers0: Array[Quantifier],
-	val quantifiers1: Array[Quantifier],
+	val quotientMatching: QuotientMatching[Quantifier],
 	val normalisedRelations0: Array[((Boolean, String), Array[Vector[Int]])],
 	val normalisedRelations1: Array[((Boolean, String), Array[Vector[Int]])],
 	val totalRelations: Int,
@@ -62,8 +58,6 @@ class MatchingContext(
 
 		MatchingContext(
 			newQuotientMatching,
-			quantifiers0,
-			quantifiers1,
 			normalisedRelations0,
 			normalisedRelations1,
 			totalRelations,
@@ -113,7 +107,7 @@ class MatchingContext(
 		}
 	}
 
-	def score: Score = {
+	private def getRelationContributions = {
 		var validCount = 0
 		var invalidCount = 0
 
@@ -130,14 +124,51 @@ class MatchingContext(
 			}
 		}
 
+		(validCount, invalidCount)
+	}
+
+	private def getQuantifierClashes: Int = {
+		// Penalise for each equivalence class with a clashing quantifier.
+		val intra0 = (0 until quotientMatching.n0).count { v =>
+			v == quotientMatching.find(0)(v) // The vertex is a class representative.
+			&& quotientMatching.getQuantifier(0)(v) == Quantifier.Clashing
+		}
+		val intra1 = (0 until quotientMatching.n1).count { v =>
+			v == quotientMatching.find(1)(v) // The vertex is a class representative.
+				&& quotientMatching.getQuantifier(1)(v) == Quantifier.Clashing
+		}
+
+		// Penalise for matches between classes with clashing quantifiers.
+		val inter = (0 until quotientMatching.n0).count { u =>
+			// Precompute representative of the match for the vertex.
+			val v = quotientMatching.getMatching(0)(u).map(quotientMatching.find(1))
+			val uQuant = quotientMatching.getQuantifier(0)(u)
+			val vQuant = v.map(quotientMatching.getQuantifier(1))
+
+			// Count the vertex if:
+			v.isDefined // The vertex is matched.
+				&& u == quotientMatching.find(0)(u) // The vertex is a class representative.
+				&& uQuant != Quantifier.Clashing // It's not already clashing.
+			  && vQuant.get != Quantifier.Clashing // The match also isn't.
+			  && uQuant.clashesWith(vQuant.get) // The quantifiers clash across the match.
+		}
+
+		intra0 + intra1 + inter
+	}
+
+	def score: Score = {
+		val (validCount: Int, invalidCount: Int) = getRelationContributions
+
 		val unionCount = quotientMatching.getSize - quotientMatching.getQuotientsSize
+
+		val quantifierClashes = getQuantifierClashes
 
 		Score(
 			totalRelations,
 			validCount,
 			invalidCount,
 			unionCount,
-			quantifierClashes = 0 // TODO: Implement quantifier clash counting
+			quantifierClashes
 		)
 	}
 }

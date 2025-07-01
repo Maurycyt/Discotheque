@@ -1,6 +1,6 @@
 package common
 
-trait Quantifier {
+trait Quantifier extends Semigroup[Quantifier] {
 	def clashesWith(other: Quantifier): Boolean
 
 	def combine(other: Quantifier): Quantifier

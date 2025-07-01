@@ -16,22 +16,26 @@ def eliminateFunctors(formula: Formula[Term]): Formula[Variable] = Formula(
 // Eliminates functors in a clause.
 def eliminateFunctors(clause: Clause[Term]): Clause[Variable] = {
 	val varNames = collectVarNames(clause)
-	val (resultLiterals, resultUsedNames) = clause.literals.foldLeft((Set.empty[Literal[Variable]], varNames)) {
-		case ((accLiterals, usedNames), literal) =>
-			val (newAccLiterals, newUsedNames, newArgs) = eliminateFunctors(
-				accLiterals, usedNames, literal.relation.args
-			)
-			(
-				newAccLiterals + Literal(
-					negated = literal.negated,
-					relation = Relation(name = literal.relation.name, args = newArgs)
-				),
-				newUsedNames
-			)
-	}
+	val (resultLiterals, resultUsedNames) = clause.literals
+		.foldLeft((Set.empty[Literal[Variable]], varNames)) {
+			case ((accLiterals, usedNames), literal) =>
+				val (newAccLiterals, newUsedNames, newArgs) = eliminateFunctors(
+					accLiterals, usedNames, literal.relation.args
+				)
+				(
+					newAccLiterals + Literal(
+						negated = literal.negated,
+						relation = Relation(name = literal.relation.name, args = newArgs)
+					),
+					newUsedNames
+				)
+		}
 
-	// Quantifiers do not change. New variables are not quantified.
-	Clause(clause.quantifiers, resultLiterals)
+	// Quantifiers for new variables need to be set to None.
+	val newVarNames = collectVarNames(Clause(Map.empty, resultLiterals))
+	val newQuantifiers = newVarNames
+		.map(name => (name, clause.quantifiers.getOrElse(name, Quantifier.None))).toMap
+	Clause(newQuantifiers, resultLiterals)
 }
 
 // Eliminates functors in a list of terms (arguments to a functor or relation).
