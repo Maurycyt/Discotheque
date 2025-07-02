@@ -32,7 +32,7 @@ constant : name=LowerIdent ;
 variable : name=UpperIdent ;
 variables : variable (',' variable)* ;
 
-termList : term (',' term)* ;
+termList : (term (',' term)*)? ;
 
 Tilde : '~' ;
 Comparison : '=' | '!=' ;

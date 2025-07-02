@@ -1,5 +1,5 @@
 package common
 
 trait Semigroup[T] {
-	def combine(other: T): T
+	infix def combine(other: T): T
 }

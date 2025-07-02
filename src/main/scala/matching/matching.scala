@@ -199,9 +199,11 @@ def describeBestMatching(
 	println("Variable matching:")
 	for xID <- 0 until quotientMatching.n0 do {
 		if quotientMatching.find(0)(xID) == xID then {
-			val xMatch = quotientMatching.getMatching(0)(xID)
+			val xMatch = quotientMatching.getMatching(0)(xID).map(quotientMatching.find(1))
+			val xQuant = quotientMatching.getQuantifier(0)(xID)
 			xMatch.foreach { yID =>
-				println(s"\tX$xID  <——>  Y${quotientMatching.find(1)(yID)}")
+				val yQuant = quotientMatching.getQuantifier(1)(yID)
+				println(s"\t$xQuant X$xID  <——>  Y$yID $yQuant    (${xQuant combine yQuant})")
 			}
 		}
 	}
