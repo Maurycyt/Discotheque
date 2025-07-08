@@ -13,7 +13,7 @@ def main(args: String*): Unit = {
 
 	if args.length < 1 then
 		throw new IllegalArgumentException(
-			"Usage: sbt \"run <path to database> [<valid relation reward>] [<invalid relation penalty>] "
+			"Usage: sbt \"runMain main <path to database> [<valid relation reward>] [<invalid relation penalty>] "
 				+ "[<variable union penalty>] [<quantifier clash penalty>]\""
 		)
 

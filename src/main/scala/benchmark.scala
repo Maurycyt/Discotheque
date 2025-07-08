@@ -13,7 +13,7 @@ def benchmark(args: String*): Unit = {
 
 	if args.length < 1 then
 		throw new IllegalArgumentException(
-			"Usage: sbt \"run <path to database>\""
+			"Usage: sbt \"runMain benchmark <path to database>\""
 		)
 
 	val filepath: String = args(0)
