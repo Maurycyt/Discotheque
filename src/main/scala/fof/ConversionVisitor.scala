@@ -6,8 +6,8 @@ import grammar.FOF.FOFParser.*
 
 import scala.jdk.CollectionConverters.*
 
-class ConversionVisitor extends FOFBaseVisitor[Vector[Formula[Term]]] {
-	override def visitFofFormulaList(ctx: FofFormulaListContext): Vector[Formula[Term]] =
+class ConversionVisitor extends FOFBaseVisitor[Vector[Formula[Variable]]] {
+	override def visitFofFormulaList(ctx: FofFormulaListContext): Vector[Formula[Variable]] =
 		ctx.fofFormula.asScala.toVector.map { ctx =>
 			Formula(
 				ctx.name.getText,
@@ -35,7 +35,7 @@ object FormulaToClauseVisitor {
 class FormulaToClauseVisitor(
 	mode: FormulaToClauseVisitor.Mode = FormulaToClauseVisitor.Mode.Positive,
 	nameMapping: Map[String, String] = Map.empty,
-) extends FOFBaseVisitor[(Clause[Term], Map[String, String])] {
+) extends FOFBaseVisitor[(Clause[Variable], Map[String, String])] {
 
 	import FormulaToClauseVisitor.*
 
@@ -71,18 +71,18 @@ class FormulaToClauseVisitor(
 	}
 
 	private def customCombineResult(
-		aggregate: (Clause[Term], Map[String, String]),
-		nextResult: (Clause[Term], Map[String, String]),
-	): (Clause[Term], Map[String, String]) = {
+		aggregate: (Clause[Variable], Map[String, String]),
+		nextResult: (Clause[Variable], Map[String, String]),
+	): (Clause[Variable], Map[String, String]) = {
 		val newQuantifiers = aggregate._1.quantifiers ++ nextResult._1.quantifiers
 		val newLiterals = aggregate._1.literals ++ nextResult._1.literals
 		(Clause(newQuantifiers, newLiterals), nextResult._2)
 	}
 
-	override def visitFWrapped(ctx: FWrappedContext): (Clause[Term], Map[String, String]) =
+	override def visitFWrapped(ctx: FWrappedContext): (Clause[Variable], Map[String, String]) =
 		ctx.formula.accept(this)
 
-	override def visitFQuantified(ctx: FQuantifiedContext): (Clause[Term], Map[String, String]) = {
+	override def visitFQuantified(ctx: FQuantifiedContext): (Clause[Variable], Map[String, String]) = {
 		val newNames = ctx.variables.variable.asScala.toSet.map(_.name.getText)
 		val (clause, nameMapping) = ctx.formula.accept(withNames(newNames))
 		val quantifier =
@@ -93,7 +93,7 @@ class FormulaToClauseVisitor(
 		(clause.copy(quantifiers = newQuantifiers), nameMapping)
 	}
 
-	override def visitFBinary(ctx: FBinaryContext): (Clause[Term], Map[String, String]) =
+	override def visitFBinary(ctx: FBinaryContext): (Clause[Variable], Map[String, String]) =
 		ctx.BinaryOp.getSymbol.getText match {
 			case "&" | "|" =>
 				val r0 = ctx.formula(0).accept(this)
@@ -113,22 +113,38 @@ class FormulaToClauseVisitor(
 				customCombineResult(r0, r1)
 		}
 
-	override def visitFNegated(ctx: FNegatedContext): (Clause[Term], Map[String, String]) =
+	override def visitFNegated(ctx: FNegatedContext): (Clause[Variable], Map[String, String]) =
 		ctx.formula.accept(notThis)
 
-	override def visitFLiteral(ctx: FLiteralContext): (Clause[Term], Map[String, String]) =
-		val newLiteral = ctx.literal.accept(LiteralVisitor(nameMapping)).asInstanceOf[Literal[Term]]
-		mode match {
-			case Mode.Positive =>
-				(Clause(Map.empty, Set(newLiteral)), nameMapping)
-			case Mode.Negative =>
-				(Clause(Map.empty, Set(newLiteral.copy(negated = !newLiteral.negated))), nameMapping)
-			case Mode.Both =>
-				(
-					Clause(Map.empty, Set(newLiteral, newLiteral.copy(negated = !newLiteral.negated))),
-					nameMapping
-				)
-		}
+	override def visitFLiteral(ctx: FLiteralContext): (Clause[Variable], Map[String, String]) =
+		// Parse the literal
+		val literal = ctx.literal.accept(LiteralVisitor(nameMapping)).asInstanceOf[Literal[Term]]
+
+		// Eliminate the functors
+		val usedNames = nameMapping.keySet
+		val (functorLiterals, newUsedNames, defunctoredArguments) =
+			common.eliminateFunctors(Set.empty, usedNames, literal.relation.args)
+		val newLiteral = Literal(
+			literal.negated,
+			Relation(literal.relation.name, defunctoredArguments)
+		)
+		val extraUsedNames = newUsedNames -- usedNames
+		val newNameMapping = nameMapping ++ extraUsedNames.map { name => (name, name) }
+
+		// Return a clause with the new functor literals and the new name mapping.
+		// Add the defunctored literal in the correct mode.
+		(
+			Clause(
+				Map.empty,
+				functorLiterals ++
+					(mode match {
+						case Mode.Positive => Set(newLiteral)
+						case Mode.Negative => Set(newLiteral.copy(negated = !newLiteral.negated))
+						case Mode.Both => Set(newLiteral, newLiteral.copy(negated = !newLiteral.negated))
+					})
+			),
+			newNameMapping
+		)
 }
 
 class LiteralVisitor(nameMapping: Map[String, String]) extends FOFBaseVisitor[AnyRef] {
