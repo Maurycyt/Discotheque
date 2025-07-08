@@ -1058,14 +1058,14 @@ cnf / power_class2 :
     ( ~ member(U,universal_class)
     | member(power_class(U),universal_class) ) 
 
-cnf / compose1 : 
+cnf / compose1a :
     subclass(compose(Yr,Xr),cross_product(universal_class,universal_class)) 
 
-cnf / compose2 : 
+cnf / compose2a :
     ( ~ member(ordered_pair(Y,Z),compose(Yr,Xr))
     | member(Z,image(Yr,image(Xr,singleton(Y)))) ) 
 
-cnf / compose3 : 
+cnf / compose3a :
     ( ~ member(Z,image(Yr,image(Xr,singleton(Y))))
     | ~ member(ordered_pair(Y,Z),cross_product(universal_class,universal_class))
     | member(ordered_pair(Y,Z),compose(Yr,Xr)) ) 

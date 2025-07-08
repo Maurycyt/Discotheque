@@ -32,8 +32,8 @@ case class Score(
 }
 
 case class ScoringConfig(
-	validRelationReward: Double,
-	invalidRelationPenalty: Double,
-	variableUnionPenalty: Double,
-	quantifierClashPenalty: Double,
+	validRelationReward: Double = 1.0,
+	invalidRelationPenalty: Double = 1.0,
+	variableUnionPenalty: Double = 1.0,
+	quantifierClashPenalty: Double = 1.0,
 )

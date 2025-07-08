@@ -47,6 +47,8 @@ class ClauseMatcher(
 	)
 	private val firstScore = firstMatchingContext.score
 
+	private var backtrackCounter = 0
+
 	/**
 	 * Recursively searches for the best scoring matching between two clauses.
 	 *
@@ -63,20 +65,34 @@ class ClauseMatcher(
 		matchingContext: MatchingContext,
 		score: Score,
 		cfg: ScoringConfig,
+		minPairing: ((Int, Int), (Int, Int)) = ((-1, -1), (-1, -1))
 	): (MatchingContext, Score) = {
+		backtrackCounter += 1
+		if backtrackCounter % 100000 == 0 then {
+			println(
+				s"Backtrack search: ${backtrackCounter / (1000 * 1000)}.${backtrackCounter / (100 * 1000) % 10}M iterations."
+			)
+		}
+
 		var result = (matchingContext, score)
 
 		// For each predicate in the first clause...
-		for predicateID0 <- matchingContext.normalisedRelations0.indices do {
+		val candidatePredicateIDs0 = matchingContext.normalisedRelations0.indices
+			.filter(_ >= minPairing._1._1)
+		for predicateID0 <- candidatePredicateIDs0 do {
 			// Find the matching predicate in the second clause
 			val (negated, predicateName) = matchingContext.normalisedRelations0(predicateID0)._1
 			val predicateID1 = matchingContext.normalisedRelations1
 				.indexWhere(_._1 == (negated, predicateName))
 
 			// Then, for each argument list of the predicate in the first clause...
-			for argListID0 <- matchingContext.normalisedRelations0(predicateID0)._2.indices do {
+			val candidateArgListIDs0 = matchingContext.normalisedRelations0(predicateID0)._2.indices
+				.filter(_ >= minPairing._1._2 && predicateID1 >= minPairing._2._1)
+			for argListID0 <- candidateArgListIDs0 do {
 				val argList0 = matchingContext.normalisedRelations0(predicateID0)._2(argListID0)
 				// For each argument list of the matching predicate in the second clause...
+				val candidateArgListIDs1 = matchingContext.normalisedRelations1(predicateID1)._2.indices
+					.filter(_ >= minPairing._2._2)
 				for argListID1 <- matchingContext.normalisedRelations1(predicateID1)._2.indices do {
 					val argList1 = matchingContext.normalisedRelations1(predicateID1)._2(argListID1)
 					// If at least one of them is unsaturated, try to match them
@@ -91,7 +107,10 @@ class ClauseMatcher(
 						// If the new matching context has a better score than the current score... ?
 						// Recurse to search further
 						val newScore = newMatchingContext.score
-						val (newMatching, newResultScore) = backtrackSearch(newMatchingContext, newScore, cfg)
+						val (newMatching, newResultScore) = backtrackSearch(
+							newMatchingContext, newScore, cfg,
+							((predicateID0, argListID0), (predicateID1, argListID1))
+						)
 						if newResultScore.score(cfg) > result._2
 							.score(cfg) then result = (newMatching, newResultScore)
 					}
@@ -147,74 +166,4 @@ def findBestMatching(
 	cfg: ScoringConfig,
 ): ClauseMatcher.BestMatchingResult = {
 	ClauseMatcher(name, clause0, clause1, cfg).findBestMatching
-}
-
-def applyUnification(
-	clause: Clause[Variable],
-	fnu: FindAndUnion,
-	variableIDs: Map[String, Int],
-	variablePrefix: String,
-): Clause[Variable] = {
-	val variableRenaming = variableIDs.map { (name, id) => (name, variablePrefix + fnu.find(id)) }
-	val variableClasses = variableIDs.keySet.groupBy(variableRenaming)
-	val combinedQuantifiers = variableClasses.map { (className, names) =>
-		(
-			className,
-			names.map(clause.quantifiers).reduce((q1, q2) => q1.combine(q2))
-		)
-	}
-	Clause(
-		combinedQuantifiers,
-		clause.literals.map {
-			literal =>
-				Literal(
-					negated = literal.negated,
-					relation = Relation(
-						name = literal.relation.name,
-						args = literal.relation.args.map(v => Variable(variableRenaming(v.name)))
-					)
-				)
-		}
-	)
-}
-
-def describeBestMatching(
-	bestMatching: ClauseMatcher.BestMatchingResult,
-	cfg: ScoringConfig,
-): Unit = {
-	val ClauseMatcher.BestMatchingResult(
-	name, (clause0, clause1), (variableIDs0, variableIDs1), bestMatchingContext, score
-	) = bestMatching
-	val quotientMatching = bestMatchingContext.quotientMatching
-	val numUnions = quotientMatching.getSize - quotientMatching.getQuotientsSize
-	println(
-		s"Best matching score: $score " +
-			s"(weighted total: ${score.score(cfg)}, relative: ${score.relativeScore(cfg)})."
-	)
-	println(s"\t$name")
-	println("First clause after equating:")
-	println("\t" + applyUnification(clause0, quotientMatching.getQuotient(0), variableIDs0, "X"))
-	println("Second clause after equating:")
-	println("\t" + applyUnification(clause1, quotientMatching.getQuotient(1), variableIDs1, "X"))
-	println("Variable matching:")
-	for xID <- 0 until quotientMatching.n0 do {
-		if quotientMatching.find(0)(xID) == xID then {
-			val xMatch = quotientMatching.getMatching(0)(xID).map(quotientMatching.find(1))
-			val xQuant = quotientMatching.getQuantifier(0)(xID)
-			xMatch.foreach { yID =>
-				val yQuant = quotientMatching.getQuantifier(1)(yID)
-				println(s"\t$xQuant X$xID  <——>  Y$yID $yQuant    (${xQuant combine yQuant})")
-			}
-		}
-	}
-	println("Contributions:")
-	println((for Literal(negated, Relation(name, args)) <- clause0.literals.toVector yield {
-		bestMatchingContext.getContribution(0, (negated, name, args.map(v => variableIDs0(v.name))))
-	}).mkString(" | ")
-	)
-	println((for Literal(negated, Relation(name, args)) <- clause1.literals.toVector yield {
-		bestMatchingContext.getContribution(1, (negated, name, args.map(v => variableIDs1(v.name))))
-	}).mkString(" | ")
-	)
-	println
 }
