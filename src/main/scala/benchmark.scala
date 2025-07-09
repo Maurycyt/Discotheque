@@ -1,9 +1,10 @@
-import cnf.getCNFParser
-import common.{Quantifier, eliminateFunctors}
-import fof.{FormulaToClauseVisitor, VariableCollector, getFOFParser}
-import matching.{ClauseMatcher, describeBestMatching, findBestMatching}
+import cnfNfof.getCNFnFOFParser
+import common.Quantifier
+import fof.FormulaToClauseVisitor
+import matching.{ClauseMatcher, ClausePrinter, findBestMatching}
 import org.antlr.v4.runtime.CharStreams
 
+import scala.jdk.CollectionConverters.*
 import scala.math.BigDecimal.RoundingMode
 
 @main
@@ -23,15 +24,15 @@ def benchmark(args: String*): Unit = {
 	// READING FILE
 
 	println(s"\nReading file: $filepath")
-	val formulaList = if filepath.contains(".cnf") then {
-		val cnfFormulaListCtx = getCNFParser(CharStreams.fromFileName(filepath)).cnfFormulaList
-		println(s"Found ${cnfFormulaListCtx.cnfFormula.size} CNF formulae.")
-		(new cnf.ConversionVisitor).visitCnfFormulaList(cnfFormulaListCtx).toSet
-	} else {
-		val fofFormulaListCtx = getFOFParser(CharStreams.fromFileName(filepath)).fofFormulaList
-		println(s"Found ${fofFormulaListCtx.fofFormula.size} FOF formulae.")
-		(new fof.ConversionVisitor).visitFofFormulaList(fofFormulaListCtx).toSet
-	}
+	val cnfNfofFormulaListCtx = getCNFnFOFParser(CharStreams.fromFileName(filepath)).formulaList
+	println(s"Found ${cnfNfofFormulaListCtx.formulaEntry.size} formulae.")
+	val formulaList = cnfNfofFormulaListCtx.formulaEntry.asScala.toSeq
+		.map { entry =>
+			val name = entry.name.getText
+			val clause = (new FormulaToClauseVisitor).visit(entry)._1
+			common.Formula(name, common.correctQuantifiers(clause))
+		}
+		.toSet
 	println(s"${formulaList.size} of them are distinct.")
 
 
@@ -47,10 +48,10 @@ def benchmark(args: String*): Unit = {
 
 	val limit = 10
 	val topSignedPredicates = util.Statistician
-		.topSignedPredicates(formulaList.map(_.clause).map(common.eliminateFunctors).toSeq, limit)
+		.topSignedPredicates(formulaList.map(_.clause).toSeq, limit)
 	println(s"\nTop $limit signed predicates:${topSignedPredicates.mkString("\n", "\n", "\n")}")
-	val benchmarkQuery = common.Clause[common.Variable](
-		Map.empty.withDefaultValue(Quantifier.None),
+	val benchmarkQuery = common.correctQuantifiers(common.Clause[common.Variable](
+		Map.empty,
 		topSignedPredicates.flatMap { case ((negated, name), (score, argsNo)) =>
 			Seq(
 				common.Literal(
@@ -63,7 +64,7 @@ def benchmark(args: String*): Unit = {
 				)
 			)
 		}.toSet
-	)
+	))
 	println(s"Benchmark query: $benchmarkQuery")
 
 
@@ -79,7 +80,7 @@ def benchmark(args: String*): Unit = {
 		formulaID += 1
 		println(s"Processing formula $formulaID/${formulaList.size}: ${formula.name} ...")
 		//		println(s"entry clause: $formula")
-		val entryClause = common.eliminateFunctors(formula.clause)
+		val entryClause = formula.clause
 		//		println(s"flattened: $entryClause")
 		bestMatchings +:= findBestMatching(formula.name, benchmarkQuery, entryClause, cfg)
 	}
@@ -94,7 +95,7 @@ def benchmark(args: String*): Unit = {
 
 	bestMatchings.sortBy(-_.score.relativeScore(cfg)).take(3).filterNot(_.score.score(cfg) <= 0)
 		.foreach { result =>
-			describeBestMatching(result, cfg)
+			ClausePrinter.describeBestMatching(result, cfg)
 		}
 
 	println(s"Processing took ${

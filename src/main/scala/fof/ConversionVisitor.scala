@@ -1,14 +1,14 @@
 package fof
 
 import common.*
-import grammar.FOF.FOFBaseVisitor
-import grammar.FOF.FOFParser.*
+import grammar.CNFnFOF.CNFnFOFBaseVisitor
+import grammar.CNFnFOF.CNFnFOFParser.*
 
 import scala.jdk.CollectionConverters.*
 
-class ConversionVisitor extends FOFBaseVisitor[Vector[Formula[Variable]]] {
-	override def visitFofFormulaList(ctx: FofFormulaListContext): Vector[Formula[Variable]] =
-		ctx.fofFormula.asScala.toVector.map { ctx =>
+class ConversionVisitor extends CNFnFOFBaseVisitor[Vector[Formula[Variable]]] {
+	override def visitFormulaList(ctx: FormulaListContext): Vector[Formula[Variable]] =
+		ctx.formulaEntry.asScala.toVector.map { ctx =>
 			Formula(
 				ctx.name.getText,
 				ctx.formula.accept(FormulaToClauseVisitor())._1
@@ -35,7 +35,7 @@ object FormulaToClauseVisitor {
 class FormulaToClauseVisitor(
 	mode: FormulaToClauseVisitor.Mode = FormulaToClauseVisitor.Mode.Positive,
 	nameMapping: Map[String, String] = Map.empty,
-) extends FOFBaseVisitor[(Clause[Variable], Map[String, String])] {
+) extends CNFnFOFBaseVisitor[(Clause[Variable], Map[String, String])] {
 
 	import FormulaToClauseVisitor.*
 
@@ -77,6 +77,15 @@ class FormulaToClauseVisitor(
 		val newQuantifiers = aggregate._1.quantifiers ++ nextResult._1.quantifiers
 		val newLiterals = aggregate._1.literals ++ nextResult._1.literals
 		(Clause(newQuantifiers, newLiterals), nextResult._2)
+	}
+
+	override def visitFormulaEntry(ctx: FormulaEntryContext): (Clause[Variable], Map[String, String]) = {
+		if ctx.language.getText == "fof" then
+			ctx.formula.accept(this)
+		else {
+			val variables = ctx.formula.accept(new VariableCollector())
+			ctx.formula.accept(withMapping(variables.map { n => (n, n) }.toMap))
+		}
 	}
 
 	override def visitFWrapped(ctx: FWrappedContext): (Clause[Variable], Map[String, String]) =
@@ -147,7 +156,7 @@ class FormulaToClauseVisitor(
 		)
 }
 
-class LiteralVisitor(nameMapping: Map[String, String]) extends FOFBaseVisitor[AnyRef] {
+class LiteralVisitor(nameMapping: Map[String, String]) extends CNFnFOFBaseVisitor[AnyRef] {
 	override def visitLNamed(ctx: LNamedContext): Literal[Term] = {
 		Literal(false, ctx.relation.accept(this).asInstanceOf[Relation[Term]])
 	}
@@ -180,7 +189,7 @@ class LiteralVisitor(nameMapping: Map[String, String]) extends FOFBaseVisitor[An
 		Variable(nameMapping(ctx.variable.name.getText))
 }
 
-class VariableCollector extends FOFBaseVisitor[Set[String]] {
+class VariableCollector extends CNFnFOFBaseVisitor[Set[String]] {
 	override def defaultResult = Set.empty[String]
 
 	override def aggregateResult(aggregate: Set[String], nextResult: Set[String]): Set[String] = {

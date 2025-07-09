@@ -56,3 +56,13 @@ def collectVarNames[T <: Term](term: T): Set[String] = term match {
 	case f: Functor =>
 		f.args.toSet.flatMap(collectVarNames)
 }
+
+// Fills in the missing quantifiers to be None.
+def correctQuantifiers(clause: Clause[Variable]): Clause[Variable] = {
+	val vars = common.collectVarNames(clause)
+	val unquantifiedVars = vars -- clause.quantifiers.keySet
+	val correctedClause = clause.copy(
+		quantifiers = clause.quantifiers ++ unquantifiedVars.map { n => (n, common.Quantifier.None) }
+	)
+	correctedClause
+}

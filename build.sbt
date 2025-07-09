@@ -5,7 +5,7 @@ ThisBuild / scalaVersion := "3.7.0"
 
 libraryDependencies += "org.antlr" % "antlr4" % "4.13.2"
 
-val grammars = Seq("CNF", "FOF")
+val grammars = Seq("CNF", "CNFnFOF", "FOF")
 val grammarFileSuffixes = Seq(
 	".interp", ".tokens", "BaseVisitor.java", "Lexer.java", "Lexer.interp", "Lexer.tokens",
 	"Parser.java", "Visitor.java"

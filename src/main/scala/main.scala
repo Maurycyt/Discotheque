@@ -1,9 +1,9 @@
-import cnf.getCNFParser
+import cnfNfof.getCNFnFOFParser
 import fof.{FormulaToClauseVisitor, VariableCollector, getFOFParser}
-import common.eliminateFunctors
-import matching.{ClauseMatcher, describeBestMatching, findBestMatching}
+import matching.{ClauseMatcher, ClausePrinter, findBestMatching}
 import org.antlr.v4.runtime.CharStreams
 
+import scala.jdk.CollectionConverters.*
 import scala.math.BigDecimal.RoundingMode
 
 @main
@@ -35,15 +35,15 @@ def main(args: String*): Unit = {
 	// READING FILE
 
 	println(s"\nReading file: $filepath")
-	val formulaList = if filepath.contains(".cnf") then {
-		val cnfFormulaListCtx = getCNFParser(CharStreams.fromFileName(filepath)).cnfFormulaList
-		println(s"Found ${cnfFormulaListCtx.cnfFormula.size} CNF formulae.")
-		(new cnf.ConversionVisitor).visitCnfFormulaList(cnfFormulaListCtx).toSet
-	} else {
-		val fofFormulaListCtx = getFOFParser(CharStreams.fromFileName(filepath)).fofFormulaList
-		println(s"Found ${fofFormulaListCtx.fofFormula.size} FOF formulae.")
-		(new fof.ConversionVisitor).visitFofFormulaList(fofFormulaListCtx).toSet
-	}
+	val cnfNfofFormulaListCtx = getCNFnFOFParser(CharStreams.fromFileName(filepath)).formulaList
+	println(s"Found ${cnfNfofFormulaListCtx.formulaEntry.size} formulae.")
+	val formulaList = cnfNfofFormulaListCtx.formulaEntry.asScala.toSeq
+		.map { entry =>
+			val name = entry.name.getText
+			val clause = (new FormulaToClauseVisitor).visit(entry)._1
+			common.Formula(name, common.correctQuantifiers(clause))
+		}
+		.toSet
 	println(s"${formulaList.size} of them are distinct.")
 
 
@@ -62,17 +62,16 @@ def main(args: String*): Unit = {
 				queryStringBuilder.append(line).addOne('\n')
 	}
 	val queryFormulaCtx = try {
-		getFOFParser(CharStreams.fromString(queryStringBuilder.toString)).formula
+		getCNFnFOFParser(CharStreams.fromString(queryStringBuilder.toString)).formula
 	} catch {
 		case e: Exception =>
 			println(s"Parsing query failed. :(")
 			return
 	}
 	val variables = (new VariableCollector).visit(queryFormulaCtx)
-	val queryClauseParsed =
+	val queryClause = common.correctQuantifiers(
 		FormulaToClauseVisitor(nameMapping = variables.map { n => (n, n) }.toMap)
-		.visit(queryFormulaCtx)._1
-	val queryClause = common.eliminateFunctors(queryClauseParsed)
+			.visit(queryFormulaCtx)._1)
 	println(s"Flattened: $queryClause")
 	println
 
@@ -85,7 +84,7 @@ def main(args: String*): Unit = {
 	val startTime = System.nanoTime
 	for formula <- formulaList do {
 		//		println(s"entry clause: $formula")
-		val entryClause = common.eliminateFunctors(formula.clause)
+		val entryClause = formula.clause
 		//		println(s"flattened: $entryClause")
 		bestMatchings +:= findBestMatching(formula.name, queryClause, entryClause, cfg)
 	}
@@ -100,7 +99,7 @@ def main(args: String*): Unit = {
 
 	bestMatchings.sortBy(-_.score.relativeScore(cfg)).take(3).filterNot(_.score.score(cfg) <= 0)
 		.foreach { result =>
-			describeBestMatching(result, cfg)
+			ClausePrinter.describeBestMatching(result, cfg)
 		}
 
 	println(s"Processing took ${
