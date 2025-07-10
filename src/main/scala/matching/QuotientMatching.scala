@@ -82,4 +82,6 @@ class QuotientMatching[T <: Semigroup[T]](
 	def getQuantifier(side: Int)(x: Int): T = (if side == 0 then sg0 else sg1)(find(side)(x))
 
 	def getMatching(side: Int)(x: Int): Option[Int] = matched(side)(x)
+
+	def areMatched(x0: Int, x1: Int): Boolean = matched(0)(x0).map(find(1)).contains(find(1)(x1))
 }

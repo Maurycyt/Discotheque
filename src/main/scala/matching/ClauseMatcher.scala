@@ -50,6 +50,54 @@ class ClauseMatcher(
 	private var backtrackCounter = 0
 
 	/**
+	 * Yields a lazily evaluated iterable of all candidate pairings for this matching context.
+	 * Automatically prunes the search space by:
+	 * - discarding predicates that would have been considered earlier, based on [[minPairing]],
+	 * - only considering pairings if at least one of the argument lists is unsaturated, and
+	 * - only considering pairings for those function symbols, which have a matched result.
+	 *
+	 * @param matchingContext The matching context.
+	 * @param minPairing      The minimum pairing to start from, used to prune the search space.
+	 * @return An iterable of candidate pairings.
+	 */
+	def nextPairings(
+		matchingContext: MatchingContext,
+		minPairing: ((Int, Int), (Int, Int)) = ((-1, -1), (-1, -1))
+	): Iterable[((Int, Int), (Int, Int))] = {
+		for {
+			// For each predicate in the first clause...
+			predicateID0 <- matchingContext.normalisedRelations0.indices.view
+			if predicateID0 >= minPairing._1._1
+
+			// Find the matching predicate in the second clause
+			(negated, predicateName) = matchingContext.normalisedRelations0(predicateID0)._1
+			predicateID1 = matchingContext.normalisedRelations1
+				.indexWhere(_._1 == (negated, predicateName))
+			if predicateID1 >= minPairing._2._1
+
+			// Then, for each argument list of the predicate in the first clause...
+			argListID0 <- matchingContext.normalisedRelations0(predicateID0)._2.indices.view
+			if argListID0 >= minPairing._1._2
+
+			// And for each argument list of the matching predicate in the second clause...
+			argListID1 <- matchingContext.normalisedRelations1(predicateID1)._2.indices.view
+			if argListID1 >= minPairing._2._2
+
+			// Predicate is either a relation symbol or (if it's a function symbol) has a matched result
+			argList0 = matchingContext.normalisedRelations0(predicateID0)._2(argListID0)
+			argList1 = matchingContext.normalisedRelations1(predicateID1)._2(argListID1)
+			if predicateName.last != '\'' ||
+				matchingContext.quotientMatching.areMatched(argList0.last, argList1.last)
+
+			// At least one of the argument lists is unsaturated
+			if !matchingContext.isSaturated(0, (negated, predicateName, argList0)) ||
+				!matchingContext.isSaturated(1, (negated, predicateName, argList1))
+		} yield {
+			((predicateID0, argListID0), (predicateID1, argListID1))
+		}
+	}
+
+	/**
 	 * Recursively searches for the best scoring matching between two clauses.
 	 *
 	 * Assumes that every match should increase the score. Otherwise, it cuts the backtracking branch.
@@ -76,47 +124,51 @@ class ClauseMatcher(
 
 		var result = (matchingContext, score)
 
-		// For each predicate in the first clause...
-		val candidatePredicateIDs0 = matchingContext.normalisedRelations0.indices
-			.filter(_ >= minPairing._1._1)
-		for predicateID0 <- candidatePredicateIDs0 do {
-			// Find the matching predicate in the second clause
-			val (negated, predicateName) = matchingContext.normalisedRelations0(predicateID0)._1
-			val predicateID1 = matchingContext.normalisedRelations1
-				.indexWhere(_._1 == (negated, predicateName))
+		//		// For each predicate in the first clause...
+		//		val candidatePredicateIDs0 = matchingContext.normalisedRelations0.indices
+		//			.filter(_ >= minPairing._1._1)
+		//		for predicateID0 <- candidatePredicateIDs0 do {
+		//			// Find the matching predicate in the second clause
+		//			val (negated, predicateName) = matchingContext.normalisedRelations0(predicateID0)._1
+		//			val predicateID1 = matchingContext.normalisedRelations1
+		//				.indexWhere(_._1 == (negated, predicateName))
+		//
+		//			// Then, for each argument list of the predicate in the first clause...
+		//			val candidateArgListIDs0 = matchingContext.normalisedRelations0(predicateID0)._2.indices
+		//				.filter(_ >= minPairing._1._2 && predicateID1 >= minPairing._2._1)
+		//			for argListID0 <- candidateArgListIDs0 do {
+		//				val argList0 = matchingContext.normalisedRelations0(predicateID0)._2(argListID0)
+		//				// For each argument list of the matching predicate in the second clause...
+		//				val candidateArgListIDs1 = matchingContext.normalisedRelations1(predicateID1)._2.indices
+		//					.filter(_ >= minPairing._2._2)
+		//				for argListID1 <- matchingContext.normalisedRelations1(predicateID1)._2.indices do {
+		//					val argList1 = matchingContext.normalisedRelations1(predicateID1)._2(argListID1)
+		//					// If at least one of them is unsaturated, try to match them
+		//					if !matchingContext.isSaturated(0, (negated, predicateName, argList0))
+		//						|| !matchingContext.isSaturated(1, (negated, predicateName, argList1))
+		//					then {
 
-			// Then, for each argument list of the predicate in the first clause...
-			val candidateArgListIDs0 = matchingContext.normalisedRelations0(predicateID0)._2.indices
-				.filter(_ >= minPairing._1._2 && predicateID1 >= minPairing._2._1)
-			for argListID0 <- candidateArgListIDs0 do {
-				val argList0 = matchingContext.normalisedRelations0(predicateID0)._2(argListID0)
-				// For each argument list of the matching predicate in the second clause...
-				val candidateArgListIDs1 = matchingContext.normalisedRelations1(predicateID1)._2.indices
-					.filter(_ >= minPairing._2._2)
-				for argListID1 <- matchingContext.normalisedRelations1(predicateID1)._2.indices do {
-					val argList1 = matchingContext.normalisedRelations1(predicateID1)._2(argListID1)
-					// If at least one of them is unsaturated, try to match them
-					if !matchingContext.isSaturated(0, (negated, predicateName, argList0))
-						|| !matchingContext.isSaturated(1, (negated, predicateName, argList1))
-					then {
-						// Try to match them
-						val newMatchingContext = matchingContext.withMatch(
-							(predicateID0, argListID0), (predicateID1, argListID1)
-						)
+		for ((predicateID0, argListID0), (predicateID1, argListID1)) <- nextPairings(
+			matchingContext, minPairing
+		) do {
+			// Try to match them
+			val newMatchingContext = matchingContext.withMatch(
+				(predicateID0, argListID0), (predicateID1, argListID1)
+			)
 
-						// If the new matching context has a better score than the current score... ?
-						// Recurse to search further
-						val newScore = newMatchingContext.score
-						val (newMatching, newResultScore) = backtrackSearch(
-							newMatchingContext, newScore, cfg,
-							((predicateID0, argListID0), (predicateID1, argListID1))
-						)
-						if newResultScore.score(cfg) > result._2
-							.score(cfg) then result = (newMatching, newResultScore)
-					}
-				}
-			}
+			// If the new matching context has a better score than the current score... ?
+			// Recurse to search further
+			val newScore = newMatchingContext.score
+			val (newMatching, newResultScore) = backtrackSearch(
+				newMatchingContext, newScore, cfg,
+				((predicateID0, argListID0), (predicateID1, argListID1))
+			)
+			if newResultScore.score(cfg) > result._2.score(cfg) then
+				result = (newMatching, newResultScore)
 		}
+		//					}
+		//				}
+		//			}
 
 		result
 	}
