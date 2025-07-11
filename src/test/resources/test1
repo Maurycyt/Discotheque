@@ -1,0 +1,4 @@
+fof / t36_zfmisc_1 :
+    ! [A,B,C] :
+      ( cartesian_product2(singleton(A),unordered_pair(B,C)) = unordered_pair(ordered_pair(A,B),ordered_pair(A,C))
+      & cartesian_product2(unordered_pair(A,B),singleton(C)) = unordered_pair(ordered_pair(A,C),ordered_pair(B,C)) )
