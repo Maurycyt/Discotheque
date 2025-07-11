@@ -34,20 +34,26 @@ case class Clause[T <: Term](quantifiers: Map[String, Quantifier], literals: Set
 	}
 }
 
-case class Literal[T <: Term](negated: Boolean, relation: Relation[T]) {
+case class Literal[T <: Term](signedPredicate: SignedPredicate, args: Vector[T]) {
 	override def toString: String = {
-		s"${if negated then "~" else ""}$relation"
+		s"$signedPredicate${args.mkString("(", ",", ")")}"
 	}
-	
-	def signedPredicate: (Boolean, String) = (negated, relation.name)
+
+	def negated: Literal[T] = Literal(signedPredicate.negatedCopy, args)
 }
 
-case class Relation[T <: Term](name: String, args: Vector[T]) {
-	override def toString: String = s"$name${args.mkString("(", ",", ")")}"
+case class SignedPredicate(negated: Boolean, name: String) {
+	override def toString: String = s"${if negated then "~" else ""}$name"
+
+	def negatedCopy: SignedPredicate = copy(negated = !negated)
+}
+
+object SignedPredicate {
+	given Ordering[SignedPredicate] = Ordering.by(sp => (sp.negated, sp.name))
 }
 
 def collectVarNames[T <: Term](clause: Clause[T]): Set[String] = {
-	clause.literals.flatMap(_.relation.args.flatMap(collectVarNames))
+	clause.literals.flatMap(_.args.flatMap(collectVarNames))
 }
 
 def collectVarNames[T <: Term](term: T): Set[String] = term match {

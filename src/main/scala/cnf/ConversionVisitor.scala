@@ -27,23 +27,15 @@ class ConversionVisitor extends CNFBaseVisitor[AnyRef] {
 		)
 
 	override def visitLNamed(ctx: LNamedContext): AnyRef =
-		Literal(ctx.Tilde != null, ctx.relation.accept(this).asInstanceOf[Relation[Term]])
+		Literal(
+			SignedPredicate(ctx.Tilde != null, ctx.relation.name.getText),
+			ctx.relation.termList.term.asScala.toVector.map(_.accept(this).asInstanceOf[Term])
+		)
 
 	override def visitLComp(ctx: LCompContext): AnyRef =
 		Literal(
-			ctx.comp.getText == "!=",
-			Relation(
-				"=",
-				ctx.term.asScala.toVector.map(
-					_.accept(this).asInstanceOf[Term]
-				)
-			)
-		)
-
-	override def visitRelation(ctx: RelationContext): Relation[Term] =
-		Relation(
-			ctx.name.getText,
-			ctx.termList.term.asScala.toVector.map(_.accept(this).asInstanceOf[Term])
+			SignedPredicate(ctx.comp.getText == "!=", "="),
+			ctx.term.asScala.toVector.map(_.accept(this).asInstanceOf[Term])
 		)
 
 	override def visitTConstant(ctx: TConstantContext): Term =

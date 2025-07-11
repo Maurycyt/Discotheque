@@ -20,13 +20,10 @@ def eliminateFunctors(clause: Clause[Term]): Clause[Variable] = {
 		.foldLeft((Set.empty[Literal[Variable]], varNames)) {
 			case ((accLiterals, usedNames), literal) =>
 				val (newAccLiterals, newUsedNames, newArgs) = eliminateFunctors(
-					accLiterals, usedNames, literal.relation.args
+					accLiterals, usedNames, literal.args
 				)
 				(
-					newAccLiterals + Literal(
-						negated = literal.negated,
-						relation = Relation(name = literal.relation.name, args = newArgs)
-					),
+					newAccLiterals + literal.copy(args = newArgs),
 					newUsedNames
 				)
 		}
@@ -70,10 +67,7 @@ def eliminateFunctor(
 		)
 		val newVarName = getNewName(newUsedNames)
 		(
-			newAccLiterals + Literal(
-				negated = true,
-				relation = Relation(name = f.name ++ "'", args = newArgs :+ Variable(newVarName))
-			),
+			newAccLiterals + Literal(SignedPredicate(true, f.name), newArgs :+ Variable(newVarName)),
 			newUsedNames + newVarName,
 			Variable(newVarName)
 		)

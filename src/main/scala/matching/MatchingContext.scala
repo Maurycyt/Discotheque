@@ -1,6 +1,6 @@
 package matching
 
-import common.Quantifier
+import common.*
 
 object MatchingContext {
 	enum Contribution {
@@ -31,8 +31,8 @@ object MatchingContext {
  */
 class MatchingContext(
 	val quotientMatching: QuotientMatching[Quantifier],
-	val normalisedRelations0: Array[((Boolean, String), Array[Vector[Int]])],
-	val normalisedRelations1: Array[((Boolean, String), Array[Vector[Int]])],
+	val normalisedRelations0: Array[(SignedPredicate, Array[Vector[Int]])],
+	val normalisedRelations1: Array[(SignedPredicate, Array[Vector[Int]])],
 	val totalRelations: Int,
 ) {
 
@@ -67,35 +67,33 @@ class MatchingContext(
 	// Checks if a relation is saturated, meaning that all its arguments are matched.
 	def isSaturated(
 		side: Int,
-		relation: (Boolean, String, Vector[Int])
+		linteral: (SignedPredicate, Vector[Int])
 	): Boolean = {
-		val args = relation._3
-		args.forall { arg =>
+		linteral._2.forall { arg =>
 			quotientMatching.getMatching(side)(arg).isDefined
 		}
 	}
 
-	// Get the contribution of a single relation from one side of the matching.
+	// Get the contribution of a single literal from one side of the matching.
 	// The side must be either 0 or 1.
 	def getContribution(
 		side: Int,
-		relation: (Boolean, String, Vector[Int])
+		linteral: (SignedPredicate, Vector[Int])
 	): Contribution = {
 		val otherRelations = if side == 0 then normalisedRelations1 else normalisedRelations0
-		val args = relation._3
 
 		// Check saturation
-		val saturated = args.forall { arg =>
+		val saturated = linteral._2.forall { arg =>
 			quotientMatching.getMatching(side)(arg).isDefined
 		}
 		if !saturated then return Contribution.UnSaturated
 
 		// Check validity
-		val matchedClasses = args
+		val matchedClasses = linteral._2
 			.map(
 				quotientMatching.getMatching(side) andThen (_.get) andThen quotientMatching.find(1 - side)
 			)
-		otherRelations.find(_._1 == (relation._1, relation._2)) match {
+		otherRelations.find(_._1 == linteral._1) match {
 			case Some((_, otherArgsSet)) =>
 				if otherArgsSet.exists { otherArgs =>
 					otherArgs.zip(matchedClasses).forall { (otherArg, matchedClass) =>
@@ -113,9 +111,9 @@ class MatchingContext(
 
 		for side <- 0 to 1 do {
 			val normalisedRelations = if side == 0 then normalisedRelations0 else normalisedRelations1
-			for ((sign, name), argsSet) <- normalisedRelations do {
+			for (sp, argsSet) <- normalisedRelations do {
 				for args <- argsSet do {
-					getContribution(side, (sign, name, args)) match {
+					getContribution(side, (sp, args)) match {
 						case Contribution.UnSaturated => ()
 						case Contribution.Valid => validCount += 1
 						case Contribution.InValid => invalidCount += 1

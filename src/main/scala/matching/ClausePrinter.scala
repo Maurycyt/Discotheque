@@ -1,6 +1,6 @@
 package matching
 
-import common.{Clause, Variable, Literal, Relation}
+import common.{Clause, Variable, Literal}
 
 object ClausePrinter {
 	def applyUnification(
@@ -20,14 +20,7 @@ object ClausePrinter {
 		Clause(
 			combinedQuantifiers,
 			clause.literals.map {
-				literal =>
-					Literal(
-						negated = literal.negated,
-						relation = Relation(
-							name = literal.relation.name,
-							args = literal.relation.args.map(v => Variable(variableRenaming(v.name)))
-						)
-					)
+				literal => literal.copy(args = literal.args.map(v => Variable(variableRenaming(v.name))))
 			}
 		)
 	}
@@ -62,12 +55,12 @@ object ClausePrinter {
 			}
 		}
 		println("Contributions:")
-		println((for Literal(negated, Relation(name, args)) <- clause0.literals.toVector yield {
-			bestMatchingContext.getContribution(0, (negated, name, args.map(v => variableIDs0(v.name))))
+		println((for Literal(sp, args) <- clause0.literals.toVector yield {
+			bestMatchingContext.getContribution(0, (sp, args.map(v => variableIDs0(v.name))))
 		}).mkString(" | ")
 		)
-		println((for Literal(negated, Relation(name, args)) <- clause1.literals.toVector yield {
-			bestMatchingContext.getContribution(1, (negated, name, args.map(v => variableIDs1(v.name))))
+		println((for Literal(sp, args) <- clause1.literals.toVector yield {
+			bestMatchingContext.getContribution(1, (sp, args.map(v => variableIDs1(v.name))))
 		}).mkString(" | ")
 		)
 		println

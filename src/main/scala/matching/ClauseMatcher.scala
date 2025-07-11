@@ -1,6 +1,7 @@
 package matching
 
 import common.*
+import common.given
 
 class ClauseMatcher(
 	name: String,
@@ -26,9 +27,9 @@ class ClauseMatcher(
 	// which are shared between the two clauses.
 	private def prepLiteralsForMatching(
 		literals: Set[Literal[Variable]], variableIDs: Map[String, Int]
-	): Array[((Boolean, String), Array[Vector[Int]])] =
+	): Array[(SignedPredicate, Array[Vector[Int]])] =
 		literals
-			.groupMap(_.signedPredicate)(_.relation.args.map(v => variableIDs(v.name)))
+			.groupMap(_.signedPredicate)(_.args.map(v => variableIDs(v.name)))
 			.filter { (k, v) => commonSignedPredicates.contains(k) }
 			.map { (k, v) => (k, v.toArray) }
 			.toArray
@@ -70,9 +71,9 @@ class ClauseMatcher(
 			if predicateID0 >= minPairing._1._1
 
 			// Find the matching predicate in the second clause
-			(negated, predicateName) = matchingContext.normalisedRelations0(predicateID0)._1
+			signedPredicate = matchingContext.normalisedRelations0(predicateID0)._1
 			predicateID1 = matchingContext.normalisedRelations1
-				.indexWhere(_._1 == (negated, predicateName))
+				.indexWhere(_._1 == signedPredicate)
 			if predicateID1 >= minPairing._2._1
 
 			// Then, for each argument list of the predicate in the first clause...
@@ -86,12 +87,12 @@ class ClauseMatcher(
 			// Predicate is either a relation symbol or (if it's a function symbol) has a matched result
 			argList0 = matchingContext.normalisedRelations0(predicateID0)._2(argListID0)
 			argList1 = matchingContext.normalisedRelations1(predicateID1)._2(argListID1)
-			if predicateName.last != '\'' ||
+			if signedPredicate.name.last != '\'' ||
 				matchingContext.quotientMatching.areMatched(argList0.last, argList1.last)
 
 			// At least one of the argument lists is unsaturated
-			if !matchingContext.isSaturated(0, (negated, predicateName, argList0)) ||
-				!matchingContext.isSaturated(1, (negated, predicateName, argList1))
+			if !matchingContext.isSaturated(0, (signedPredicate, argList0)) ||
+				!matchingContext.isSaturated(1, (signedPredicate, argList1))
 		} yield {
 			((predicateID0, argListID0), (predicateID1, argListID1))
 		}

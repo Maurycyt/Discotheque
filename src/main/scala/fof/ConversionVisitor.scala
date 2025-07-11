@@ -132,10 +132,10 @@ class FormulaToClauseVisitor(
 		// Eliminate the functors
 		val usedNames = nameMapping.keySet
 		val (functorLiterals, newUsedNames, defunctoredArguments) =
-			common.eliminateFunctors(Set.empty, usedNames, literal.relation.args)
+			common.eliminateFunctors(Set.empty, usedNames, literal.args)
 		val newLiteral = Literal(
-			literal.negated,
-			Relation(literal.relation.name, defunctoredArguments)
+			literal.signedPredicate,
+			defunctoredArguments
 		)
 		val extraUsedNames = newUsedNames -- usedNames
 		val newNameMapping = nameMapping ++ extraUsedNames.map { name => (name, name) }
@@ -148,8 +148,8 @@ class FormulaToClauseVisitor(
 				functorLiterals ++
 					(mode match {
 						case Mode.Positive => Set(newLiteral)
-						case Mode.Negative => Set(newLiteral.copy(negated = !newLiteral.negated))
-						case Mode.Both => Set(newLiteral, newLiteral.copy(negated = !newLiteral.negated))
+						case Mode.Negative => Set(newLiteral.negated)
+						case Mode.Both => Set(newLiteral, newLiteral.negated)
 					})
 			),
 			newNameMapping
@@ -158,22 +158,16 @@ class FormulaToClauseVisitor(
 
 class LiteralVisitor(nameMapping: Map[String, String]) extends CNFnFOFBaseVisitor[AnyRef] {
 	override def visitLNamed(ctx: LNamedContext): Literal[Term] = {
-		Literal(false, ctx.relation.accept(this).asInstanceOf[Relation[Term]])
+		Literal(
+			SignedPredicate(false, ctx.relation.name.getText),
+			ctx.relation.termList.term.asScala.toVector.map(_.accept(this).asInstanceOf[Term])
+		)
 	}
 
 	override def visitLComp(ctx: LCompContext): Literal[Term] =
 		Literal(
-			ctx.comp.getText == "!=",
-			Relation(
-				"=",
-				ctx.term.asScala.toVector.map(_.accept(this).asInstanceOf[Term])
-			)
-		)
-
-	override def visitRelation(ctx: RelationContext): AnyRef =
-		Relation(
-			ctx.name.getText,
-			ctx.termList.term.asScala.toVector.map(_.accept(this).asInstanceOf[Term])
+			SignedPredicate(ctx.comp.getText == "!=", "="),
+			ctx.term.asScala.toVector.map(_.accept(this).asInstanceOf[Term])
 		)
 
 	override def visitTFunctor(ctx: TFunctorContext): Term =

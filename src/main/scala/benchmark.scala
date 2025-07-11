@@ -52,16 +52,9 @@ def benchmark(args: String*): Unit = {
 	println(s"\nTop $limit signed predicates:${topSignedPredicates.mkString("\n", "\n", "\n")}")
 	val benchmarkQuery = common.correctQuantifiers(common.Clause[common.Variable](
 		Map.empty,
-		topSignedPredicates.flatMap { case ((negated, name), (score, argsNo)) =>
-			Seq(
-				common.Literal(
-					negated,
-					common.Relation[common.Variable](name, Vector.fill(argsNo)(common.Variable(nextVarID())))
-				),
-				common.Literal(
-					negated,
-					common.Relation[common.Variable](name, Vector.fill(argsNo)(common.Variable(nextVarID())))
-				)
+		topSignedPredicates.flatMap { case (sp, (score, argsNo)) =>
+			Seq.fill(2)(
+				common.Literal(sp, Vector.fill(argsNo)(common.Variable(nextVarID())))
 			)
 		}.toSet
 	))
