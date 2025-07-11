@@ -1,7 +1,6 @@
 package matching
 
 import common.*
-import common.given
 
 class ClauseMatcher(
 	name: String,
@@ -124,30 +123,6 @@ class ClauseMatcher(
 		}
 
 		var result = (matchingContext, score)
-
-		//		// For each predicate in the first clause...
-		//		val candidatePredicateIDs0 = matchingContext.normalisedRelations0.indices
-		//			.filter(_ >= minPairing._1._1)
-		//		for predicateID0 <- candidatePredicateIDs0 do {
-		//			// Find the matching predicate in the second clause
-		//			val (negated, predicateName) = matchingContext.normalisedRelations0(predicateID0)._1
-		//			val predicateID1 = matchingContext.normalisedRelations1
-		//				.indexWhere(_._1 == (negated, predicateName))
-		//
-		//			// Then, for each argument list of the predicate in the first clause...
-		//			val candidateArgListIDs0 = matchingContext.normalisedRelations0(predicateID0)._2.indices
-		//				.filter(_ >= minPairing._1._2 && predicateID1 >= minPairing._2._1)
-		//			for argListID0 <- candidateArgListIDs0 do {
-		//				val argList0 = matchingContext.normalisedRelations0(predicateID0)._2(argListID0)
-		//				// For each argument list of the matching predicate in the second clause...
-		//				val candidateArgListIDs1 = matchingContext.normalisedRelations1(predicateID1)._2.indices
-		//					.filter(_ >= minPairing._2._2)
-		//				for argListID1 <- matchingContext.normalisedRelations1(predicateID1)._2.indices do {
-		//					val argList1 = matchingContext.normalisedRelations1(predicateID1)._2(argListID1)
-		//					// If at least one of them is unsaturated, try to match them
-		//					if !matchingContext.isSaturated(0, (negated, predicateName, argList0))
-		//						|| !matchingContext.isSaturated(1, (negated, predicateName, argList1))
-		//					then {
 
 		for ((predicateID0, argListID0), (predicateID1, argListID1)) <- nextPairings(
 			matchingContext, minPairing
