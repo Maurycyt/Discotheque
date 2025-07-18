@@ -45,6 +45,8 @@ case class Literal[T <: Term](signedPredicate: SignedPredicate, args: Vector[T])
 case class SignedPredicate(negated: Boolean, name: String) {
 	override def toString: String = s"${if negated then "~" else ""}$name"
 
+	val isFunction: Boolean = name.last == '\''
+
 	def negatedCopy: SignedPredicate = copy(negated = !negated)
 }
 

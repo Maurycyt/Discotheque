@@ -19,7 +19,7 @@ def generatedGrammarFiles(baseDirectoryFile: File, grammarName: String): Seq[Fil
 lazy val root = (project in file("."))
 	.settings(
 		name := "DiscoTheque",
-		scalacOptions ++= Seq("-deprecation", "-explain", "-print-lines", "-new-syntax"),
+		scalacOptions ++= Seq("-deprecation", /*"-explain",*/ "-print-lines", "-new-syntax"),
 
 		// Generates the lexers and parsers.
 		Compile / sourceGenerators += Def.task {

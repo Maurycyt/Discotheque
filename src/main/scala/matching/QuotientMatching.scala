@@ -1,13 +1,13 @@
 package matching
 
-import common.{Quantifier, Semigroup}
+import common.Semigroup
 
 /**
  * A matching, but between equivalence classes of two sets.
  * Automatically builds equivalence classes, and keeps them minimal.
  *
- * @param n0 The number of elements in the first set.
- * @param n1 The number of elements in the second set.
+ * @param n0  The number of elements in the first set.
+ * @param n1  The number of elements in the second set.
  * @param sg0 The semigroup for the first set, used to combine elements.
  * @param sg1 The semigroup for the second set, used to combine elements.
  */
@@ -52,7 +52,7 @@ class QuotientMatching[T <: Semigroup[T]](
 
 		// Perform the unions and combine the semigroup elements.
 		result.quotient(0) = quotient(0).withUnions(unions0 *)
-		for ((u,v) <- unions0) do {
+		for ((u, v) <- unions0) do {
 			val rep = result.quotient(0).find(u)
 			newSg0(rep) = newSg0(rep).combine(sg0(u))
 			newSg0(rep) = newSg0(rep).combine(sg0(v))
@@ -82,6 +82,13 @@ class QuotientMatching[T <: Semigroup[T]](
 	def getQuantifier(side: Int)(x: Int): T = (if side == 0 then sg0 else sg1)(find(side)(x))
 
 	def getMatching(side: Int)(x: Int): Option[Int] = matched(side)(x)
+
+	def getMatchingAndColours(side: Int)(x: Int): (Option[Int], T, Option[T]) = {
+		val y = getMatching(side)(x).map(find(1 - side))
+		val xQuant = getQuantifier(side)(x)
+		val yQuant = y.map(getQuantifier(1 - side))
+		(y, xQuant, yQuant)
+	}
 
 	def areMatched(x0: Int, x1: Int): Boolean = matched(0)(x0).map(find(1)).contains(find(1)(x1))
 }

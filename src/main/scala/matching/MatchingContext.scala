@@ -31,8 +31,8 @@ object MatchingContext {
  */
 class MatchingContext(
 	val quotientMatching: QuotientMatching[Quantifier],
-	val normalisedRelations0: Array[(SignedPredicate, Array[Vector[Int]])],
-	val normalisedRelations1: Array[(SignedPredicate, Array[Vector[Int]])],
+	val normalisedRelations0: Map[SignedPredicate, Array[Vector[Int]]],
+	val normalisedRelations1: Map[SignedPredicate, Array[Vector[Int]]],
 	val totalRelations: Int,
 ) {
 
@@ -41,19 +41,14 @@ class MatchingContext(
 	/**
 	 * Creates a new MatchingContext with an additional match between relations.
 	 *
-	 * @param relID0 The ID of the relation in the first clause,
-	 *               represented by a tuple (predicate index, argument list index).
-	 * @param relID1 The ID of the relation in the second clause,
-	 *               represented by a tuple (predicate index, argument list index).
+	 * @param sp The signed predicate of both relations.
+	 * @param relID0 The ID of the relation in the first clause.
+	 * @param relID1 The ID of the relation in the second clause.
 	 * @return A new MatchingContext with the extra relation match.
 	 */
-	def withMatch(relID0: (Int, Int), relID1: (Int, Int)): MatchingContext = {
-		assert(
-			normalisedRelations0(relID0._1)._1 == normalisedRelations1(relID1._1)._1, "Predicate mismatch"
-		)
-
-		val argList0 = normalisedRelations0(relID0._1)._2(relID0._2)
-		val argList1 = normalisedRelations1(relID1._1)._2(relID1._2)
+	def withMatch(sp: SignedPredicate, relID0: Int, relID1: Int): MatchingContext = {
+		val argList0 = normalisedRelations0(sp)(relID0)
+		val argList1 = normalisedRelations1(sp)(relID1)
 		val newQuotientMatching = quotientMatching.withMatches(argList0 zip argList1 *)
 
 		MatchingContext(
@@ -139,9 +134,7 @@ class MatchingContext(
 		// Penalise for matches between classes with clashing quantifiers.
 		val inter = (0 until quotientMatching.n0).count { u =>
 			// Precompute representative of the match for the vertex.
-			val v = quotientMatching.getMatching(0)(u).map(quotientMatching.find(1))
-			val uQuant = quotientMatching.getQuantifier(0)(u)
-			val vQuant = v.map(quotientMatching.getQuantifier(1))
+			val (v, uQuant, vQuant) = quotientMatching.getMatchingAndColours(0)(u)
 
 			// Count the vertex if:
 			v.isDefined // The vertex is matched.

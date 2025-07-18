@@ -46,10 +46,8 @@ object ClausePrinter {
 		println("Variable matching:")
 		for xID <- 0 until quotientMatching.n0 do {
 			if quotientMatching.find(0)(xID) == xID then {
-				val xMatch = quotientMatching.getMatching(0)(xID).map(quotientMatching.find(1))
-				val xQuant = quotientMatching.getQuantifier(0)(xID)
-				xMatch.foreach { yID =>
-					val yQuant = quotientMatching.getQuantifier(1)(yID)
+				val (yID, xQuant, yQuant) = quotientMatching.getMatchingAndColours(0)(xID)
+				yQuant.foreach { yQuant =>
 					println(s"\t$xQuant X$xID  <——>  Y$yID $yQuant    (${xQuant combine yQuant})")
 				}
 			}

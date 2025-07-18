@@ -1,0 +1,15 @@
+% Direct search should take 2^(1+1+1 = 3) iterations
+
+cnf / membership_in_subsets :
+    ( ~ member(Element,Subset)
+    | ~ subset(Subset,Superset)
+    | member(Element,Superset) )
+
+
+% Direct search should take <= 2^(1+9+9 = 19) iterations
+
+cnf / union_axiom1 :
+    ( union(Set1,Set2,Union)
+    | member(g(Set1,Set2,Union),Set1)
+    | member(g(Set1,Set2,Union),Set2)
+    | member(g(Set1,Set2,Union),Union) )
