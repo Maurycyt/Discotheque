@@ -66,8 +66,9 @@ def eliminateFunctor(
 			accLiterals, usedNames, f.args
 		)
 		val newVarName = getNewName(newUsedNames)
+		val newLiteral = Literal(SignedPredicate(true, f.name + '\''), newArgs :+ Variable(newVarName))
 		(
-			newAccLiterals + Literal(SignedPredicate(true, f.name), newArgs :+ Variable(newVarName)),
+			newAccLiterals + newLiteral,
 			newUsedNames + newVarName,
 			Variable(newVarName)
 		)

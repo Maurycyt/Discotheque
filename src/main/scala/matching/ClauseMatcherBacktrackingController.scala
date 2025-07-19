@@ -44,5 +44,5 @@ class ClauseMatcherBacktrackingController(
 	override def iterator: CMBCIterator = CMBCIterator(this)
 
 	def addAll(elements: Map[SignedPredicate, IterableOnce[(Int, Int)]]): CMBC =
-		new CMBC(matchCandidates.map((sp, cs) => (sp, cs.addAll(elements(sp)))))
+		new CMBC(matchCandidates.map((sp, cs) => (sp, cs.addAll(elements.getOrElse(sp, Set.empty)))))
 }

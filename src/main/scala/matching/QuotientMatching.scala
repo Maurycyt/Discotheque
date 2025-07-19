@@ -91,4 +91,6 @@ class QuotientMatching[T <: Semigroup[T]](
 	}
 
 	def areMatched(x0: Int, x1: Int): Boolean = matched(0)(x0).map(find(1)).contains(find(1)(x1))
+
+	def getClasses(side: Int): Map[Int, Set[Int]] = quotient(side).getClasses
 }

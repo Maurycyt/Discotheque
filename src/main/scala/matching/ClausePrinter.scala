@@ -48,7 +48,7 @@ object ClausePrinter {
 			if quotientMatching.find(0)(xID) == xID then {
 				val (yID, xQuant, yQuant) = quotientMatching.getMatchingAndColours(0)(xID)
 				yQuant.foreach { yQuant =>
-					println(s"\t$xQuant X$xID  <——>  Y$yID $yQuant    (${xQuant combine yQuant})")
+					println(s"\t$xQuant X$xID  <——>  Y${yID.get} $yQuant    (${xQuant combine yQuant})")
 				}
 			}
 		}

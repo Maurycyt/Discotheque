@@ -39,4 +39,7 @@ class FindAndUnion(val n: Int) {
 	def copyParentsTo(array: Array[Int]): Unit = {
 		parent.copyToArray(array)
 	}
+
+	// Get the equivalence classes, grouped by representative.
+	def getClasses: Map[Int, Set[Int]] = (0 until n).toSet.groupBy(find)
 }
