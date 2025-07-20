@@ -1,0 +1,11 @@
+fof / p4 :
+    ! [B] :
+      ( ilf_type(B,set_type)
+     => ! [C] :
+          ( ilf_type(C,set_type)
+         => ( ! [D] :
+                ( ilf_type(D,subset_type(cross_product(B,C)))
+               => ilf_type(D,relation_type(B,C)) )
+            & ! [E] :
+                ( ilf_type(E,relation_type(B,C))
+               => ilf_type(E,subset_type(cross_product(B,C))) ) ) ) )

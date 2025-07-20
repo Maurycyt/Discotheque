@@ -89,8 +89,8 @@ class ClauseMatcher(
 			)
 			val newController = matchCandidates.checkpoint.addAll(unlockedFunctionMatchCandidates)
 
-			println(s"Matched $sp ${argList0.mkString("(",",",")")} ${argList1.mkString("(",",",")")}")
-			println(s"Unlocked: ${unlockedFunctionMatchCandidates.mkString("\n",",\n","\n")}")
+//			println(s"Matched $sp ${argList0.mkString("(",",",")")} ${argList1.mkString("(",",",")")}")
+//			println(s"Unlocked: ${unlockedFunctionMatchCandidates.mkString("\n",",\n","\n")}")
 
 			// Recurse to search further
 			val newScore = newMatchingContext.score
@@ -191,18 +191,20 @@ object ClauseMatcher {
 		normalisedRelations0: Map[SignedPredicate, Array[Vector[Int]]],
 		normalisedRelations1: Map[SignedPredicate, Array[Vector[Int]]]
 	): Map[SignedPredicate, CheckpointSet[(Int, Int)]] = {
-		// Starting candidates do not include function symbols.
 		commonSPs
-			.filterNot(_.isFunction)
 			.map { sp =>
-				val numOptions0 = normalisedRelations0(sp).length
-				val numOptions1 = normalisedRelations1(sp).length
-				sp -> CheckpointSet[(Int, Int)](
-					(for
-						o0 <- 0 until numOptions0
-						o1 <- 0 until numOptions1
-					yield (o0, o1)).toSet
-				)
+				// Starting candidates do not include function symbols.
+				if sp.isFunction then
+					sp -> CheckpointSet[(Int, Int)](Set.empty)
+				else
+					val numOptions0 = normalisedRelations0(sp).length
+					val numOptions1 = normalisedRelations1(sp).length
+					sp -> CheckpointSet[(Int, Int)](
+						(for
+							o0 <- 0 until numOptions0
+							o1 <- 0 until numOptions1
+						yield (o0, o1)).toSet
+					)
 			}.toMap
 	}
 
