@@ -55,12 +55,21 @@ def eliminateFunctors(
 // Eliminates functor from a single term, if applicable.
 // Takes and returns an accumulator of literals and used variable names.
 // Returns new variable name to use in place of functor.
-@tailrec
 def eliminateFunctor(
 	accLiterals: Set[Literal[Variable]], usedNames: Set[String], arg: Term
 ): (Set[Literal[Variable]], Set[String], Variable) = arg match {
 	case v: Variable => (accLiterals, usedNames, v)
-	case c: Constant => eliminateFunctor(accLiterals, usedNames, Functor(c.name, Vector.empty))
+	case c: Constant =>
+		// Variables that are put in place of constants are always the same, since they
+		// depend only on the constant name, not on any arguments (there are no arguments).
+		val newVarName = "CONST_" + c.name
+		// If a constant is used multiple times, the literals will be automatically deduplicated.
+		val newLiteral = Literal(SignedPredicate(true, c.name + '\''), Vector(Variable(newVarName)))
+		(
+			accLiterals + newLiteral,
+			usedNames + newVarName,
+			Variable(newVarName)
+		)
 	case f: Functor =>
 		val (newAccLiterals, newUsedNames, newArgs) = eliminateFunctors(
 			accLiterals, usedNames, f.args
