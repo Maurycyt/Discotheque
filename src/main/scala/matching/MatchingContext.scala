@@ -78,10 +78,7 @@ class MatchingContext(
 		val otherRelations = if side == 0 then normalisedRelations1 else normalisedRelations0
 
 		// Check saturation
-		val saturated = linteral._2.forall { arg =>
-			quotientMatching.getMatching(side)(arg).isDefined
-		}
-		if !saturated then return Contribution.UnSaturated
+		if !isSaturated(side, linteral) then return Contribution.UnSaturated
 
 		// Check validity
 		val matchedClasses = linteral._2

@@ -1,0 +1,140 @@
+[info] welcome to sbt 1.10.11 (Eclipse Adoptium Java 21.0.7)
+[info] loading project definition from /home/maurycyt/Documents/DiscoTheque/project
+[info] loading settings for project root from build.sbt...
+[info] set current project to DiscoTheque (in build file:/home/maurycyt/Documents/DiscoTheque/)
+[info] compiling 1 Scala source to /home/maurycyt/Documents/DiscoTheque/target/scala-3.7.0/classes ...
+[info] done compiling
+[info] running iterationsTest 
+Matching f1 with f1.
+Expecting 2.0 iterations.
+Backtrack search: 0.0M iterations.Took 2 iterations.
+
+Matching f2 with f1.
+Expecting 4.0 iterations.
+Backtrack search: 0.0M iterations.Took 4 iterations.
+
+Matching f2 with f2.
+Expecting 16.0 iterations.
+Backtrack search: 0.0M iterations.Took 14 iterations.
+
+Matching f3 with f1.
+Expecting 8.0 iterations.
+Backtrack search: 0.0M iterations.Took 8 iterations.
+
+Matching f3 with f2.
+Expecting 64.0 iterations.
+Backtrack search: 0.0M iterations.Took 46 iterations.
+
+Matching f3 with f3.
+Expecting 512.0 iterations.
+Backtrack search: 0.0M iterations.Took 230 iterations.
+
+Matching f4 with f1.
+Expecting 16.0 iterations.
+Backtrack search: 0.0M iterations.Took 16 iterations.
+
+Matching f4 with f2.
+Expecting 256.0 iterations.
+Backtrack search: 0.0M iterations.Took 142 iterations.
+
+Matching f4 with f3.
+Expecting 4096.0 iterations.
+Backtrack search: 0.0M iterations.Took 990 iterations.
+
+Matching f4 with f4.
+Expecting 65536.0 iterations.
+Backtrack search: 0.0M iterations.Took 6226 iterations.
+
+Matching f5 with f1.
+Expecting 32.0 iterations.
+Backtrack search: 0.0M iterations.Took 32 iterations.
+
+Matching f5 with f2.
+Expecting 1024.0 iterations.
+Backtrack search: 0.0M iterations.Took 416 iterations.
+
+Matching f5 with f3.
+Expecting 32768.0 iterations.
+Backtrack search: 0.0M iterations.Took 3801 iterations.
+
+Matching f5 with f4.
+Expecting 1048576.0 iterations.
+Backtrack search: 0.0M iterations.Took 30810 iterations.
+
+Matching f5 with f5.
+Expecting 3.3554432E7 iterations.
+Backtrack search: 0.0M iterations.Backtrack search: 0.1M iterations.Backtrack search: 0.2M iterations.Took 208370 iterations.
+
+Matching f6 with f1.
+Expecting 64.0 iterations.
+Backtrack search: 0.0M iterations.Took 64 iterations.
+
+Matching f6 with f2.
+Expecting 4096.0 iterations.
+Backtrack search: 0.0M iterations.Took 1264 iterations.
+
+Matching f6 with f3.
+Expecting 262144.0 iterations.
+Backtrack search: 0.0M iterations.Took 15949 iterations.
+
+Matching f6 with f4.
+Expecting 1.6777216E7 iterations.
+Backtrack search: 0.0M iterations.Backtrack search: 0.1M iterations.Took 147380 iterations.
+
+Matching f6 with f5.
+Expecting 1.073741824E9 iterations.
+Backtrack search: 0.0M iterations.Backtrack search: 0.1M iterations.Backtrack search: 0.2M iterations.Backtrack search: 0.3M iterations.Backtrack search: 0.4M iterations.Backtrack search: 0.5M iterations.Backtrack search: 0.6M iterations.Backtrack search: 0.7M iterations.Backtrack search: 0.8M iterations.Backtrack search: 0.9M iterations.Backtrack search: 1.0M iterations.Backtrack search: 1.1M iterations.Backtrack search: 1.2M iterations.Took 1296305 iterations.
+
+Matching f7 with f1.
+Expecting 128.0 iterations.
+Backtrack search: 0.0M iterations.Took 128 iterations.
+
+Matching f7 with f2.
+Expecting 16384.0 iterations.
+Backtrack search: 0.0M iterations.Took 3311 iterations.
+
+Matching f7 with f3.
+Expecting 2097152.0 iterations.
+Backtrack search: 0.0M iterations.Took 59626 iterations.
+
+Matching f7 with f4.
+Expecting 2.68435456E8 iterations.
+Backtrack search: 0.0M iterations.Backtrack search: 0.1M iterations.Backtrack search: 0.2M iterations.Backtrack search: 0.3M iterations.Backtrack search: 0.4M iterations.Backtrack search: 0.5M iterations.Backtrack search: 0.6M iterations.Backtrack search: 0.7M iterations.Took 727138 iterations.
+
+Matching f8 with f1.
+Expecting 256.0 iterations.
+Backtrack search: 0.0M iterations.Took 256 iterations.
+
+Matching f8 with f2.
+Expecting 65536.0 iterations.
+Backtrack search: 0.0M iterations.Took 9997 iterations.
+
+Matching f8 with f3.
+Expecting 1.6777216E7 iterations.
+Backtrack search: 0.0M iterations.Backtrack search: 0.1M iterations.Backtrack search: 0.2M iterations.Took 249318 iterations.
+
+Matching f9 with f1.
+Expecting 512.0 iterations.
+Backtrack search: 0.0M iterations.Took 512 iterations.
+
+Matching f9 with f2.
+Expecting 262144.0 iterations.
+Backtrack search: 0.0M iterations.Took 29471 iterations.
+
+Matching f9 with f3.
+Expecting 1.34217728E8 iterations.
+Backtrack search: 0.0M iterations.Backtrack search: 0.1M iterations.Backtrack search: 0.2M iterations.Backtrack search: 0.3M iterations.Backtrack search: 0.4M iterations.Backtrack search: 0.5M iterations.Backtrack search: 0.6M iterations.Backtrack search: 0.7M iterations.Backtrack search: 0.8M iterations.Backtrack search: 0.9M iterations.Took 991822 iterations.
+
+Matching f10 with f1.
+Expecting 1024.0 iterations.
+Backtrack search: 0.0M iterations.Took 1024 iterations.
+
+Matching f10 with f2.
+Expecting 1048576.0 iterations.
+Backtrack search: 0.0M iterations.Took 87373 iterations.
+
+Matching f10 with f3.
+Expecting 1.073741824E9 iterations.
+Backtrack search: 0.0M iterations.Backtrack search: 0.1M iterations.Backtrack search: 0.2M iterations.Backtrack search: 0.3M iterations.Backtrack search: 0.4M iterations.Backtrack search: 0.5M iterations.Backtrack search: 0.6M iterations.Backtrack search: 0.7M iterations.Backtrack search: 0.8M iterations.Backtrack search: 0.9M iterations.Backtrack search: 1.0M iterations.Backtrack search: 1.1M iterations.Backtrack search: 1.2M iterations.Backtrack search: 1.3M iterations.Backtrack search: 1.4M iterations.Backtrack search: 1.5M iterations.Backtrack search: 1.6M iterations.Backtrack search: 1.7M iterations.Backtrack search: 1.8M iterations.Backtrack search: 1.9M iterations.Backtrack search: 2.0M iterations.Backtrack search: 2.1M iterations.Backtrack search: 2.2M iterations.Backtrack search: 2.3M iterations.Backtrack search: 2.4M iterations.Backtrack search: 2.5M iterations.Backtrack search: 2.6M iterations.Backtrack search: 2.7M iterations.Backtrack search: 2.8M iterations.Backtrack search: 2.9M iterations.Backtrack search: 3.0M iterations.Backtrack search: 3.1M iterations.Backtrack search: 3.2M iterations.Backtrack search: 3.3M iterations.Backtrack search: 3.4M iterations.Backtrack search: 3.5M iterations.Backtrack search: 3.6M iterations.Backtrack search: 3.7M iterations.Backtrack search: 3.8M iterations.Took 3881274 iterations.
+
+[success] Total time: 54 s, completed 10 Aug 2025, 18:17:38

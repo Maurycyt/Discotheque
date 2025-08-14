@@ -1,0 +1,6 @@
+% Direct search should take 2^9 iterations
+
+cnf / iteration_test :
+    ( s(A,B)
+    | s(B,C)
+    | s(C,D) )

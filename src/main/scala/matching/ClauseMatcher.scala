@@ -1,6 +1,7 @@
 package matching
 
 import common.*
+import matching.MatchingContext.Contribution.Valid
 
 class ClauseMatcher(
 	name: String,
@@ -73,8 +74,10 @@ class ClauseMatcher(
 			// (although... maybe it could unlock some function symbols...)
 			argList0 = normalisedRelations0(sp)(argListID0)
 			argList1 = normalisedRelations1(sp)(argListID1)
-			if !matchingContext.isSaturated(0, (sp, argList0)) ||
-				!matchingContext.isSaturated(1, (sp, argList1))
+//			if !matchingContext.isSaturated(0, (sp, argList0)) ||
+//				!matchingContext.isSaturated(1, (sp, argList1))
+			if matchingContext.getContribution(0, (sp, argList0)) != Valid ||
+				matchingContext.getContribution(1, (sp, argList1)) != Valid
 		} do {
 			// Try to match them
 			val newMatchingContext = matchingContext.withMatch(sp, argListID0, argListID1)
