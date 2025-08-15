@@ -4,7 +4,7 @@ import numpy as np
 import io
 import matplotlib.pyplot as plt
 
-with open('iterationsTestResultsProcessed', 'r') as f:
+with open('iterationsTestResultsSimplified', 'r') as f:
     data = f.read()
 
 # Use a dictionary to store the results, with (i, j) as keys
@@ -60,7 +60,7 @@ for i in range(1, max_i + 1):
     row = [str(i)]
     for j in range(1, max_j + 1):
         if (i, j) in results:
-            row.append(f"{results[(i, j)]:.4f}")
+            row.append(f"{results[(i, j)]:.3f}")
         else:
             row.append("")
     latex_table += " & ".join(row) + " \\\\\n"
@@ -74,9 +74,6 @@ print("Copy and paste the code below into your LaTeX document.")
 print("-" * 20)
 print(latex_table)
 print("-" * 20)
-
-print("## LaTeX Table")
-print(latex_table)
 
 # --- Generate Plot ---
 print("\nGenerating plot...")

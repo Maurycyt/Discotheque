@@ -25,7 +25,7 @@ def iterationsTest(args: String*): Unit = {
 	for size <- 1 to 10 do {
 		val formula1 = getFormula(size)
 
-		for size2 <- 1 to size if size * size2 <= 30 do {
+		for size2 <- 1 to size if size * size2 <= 36 do {
 			val formula2 = getFormula(size2)
 			val entryClause1 = formula1.clause
 			val entryClause2 = formula2.clause
