@@ -1,0 +1,7 @@
+cnf / second_components_are_equal :
+    ( ~ little_set(X)
+    | ~ little_set(Y)
+    | ~ little_set(U)
+    | ~ little_set(V)
+    | ordered_pair(X,Y) != ordered_pair(U,V)
+    | Y = V )
