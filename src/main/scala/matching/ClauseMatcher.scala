@@ -38,7 +38,7 @@ class ClauseMatcher(
 	)
 	private val firstScore = firstMatchingContext.score
 
-	private var backtrackCounter = 0
+	private var backtrackCounter: Long = 0
 
 	/**
 	 * Recursively searches for the best scoring matching between two clauses.
@@ -83,14 +83,15 @@ class ClauseMatcher(
 			val newMatchingContext = matchingContext.withMatch(sp, argListID0, argListID1)
 
 			// Update the match candidates with unlocked function match candidates
-			val unlockedFunctionMatchCandidates = getUnlockedFunctionMatchCandidates(
-				newMatchingContext.quotientMatching,
-				varToFunction0,
-				varToFunction1,
-				argList0,
-				argList1
-			)
-			val newController = matchCandidates.checkpoint.addAll(unlockedFunctionMatchCandidates)
+//			val unlockedFunctionMatchCandidates = getUnlockedFunctionMatchCandidates(
+//				newMatchingContext.quotientMatching,
+//				varToFunction0,
+//				varToFunction1,
+//				argList0,
+//				argList1
+//			)
+//			val newController = matchCandidates.checkpoint.addAll(unlockedFunctionMatchCandidates)
+			val newController = matchCandidates.checkpoint
 
 //			println(s"Matched $sp ${argList0.mkString("(",",",")")} ${argList1.mkString("(",",",")")}")
 //			println(s"Unlocked: ${unlockedFunctionMatchCandidates.mkString("\n",",\n","\n")}")
@@ -98,7 +99,7 @@ class ClauseMatcher(
 			// Recurse to search further
 			val newScore = newMatchingContext.score
 			val (newMatching, newResultScore) = backtrackSearch(
-				newMatchingContext, newScore, cfg, newController /*matchCandidates.checkpoint*/
+				newMatchingContext, newScore, cfg, newController
 			)
 			if newResultScore.score(cfg) > result._2.score(cfg) then
 				result = (newMatching, newResultScore)
@@ -197,7 +198,7 @@ object ClauseMatcher {
 		commonSPs
 			.map { sp =>
 				// Starting candidates do not include function symbols.
-				if sp.isFunction then
+				if /*sp.isFunction*/ false then
 					sp -> CheckpointSet[(Int, Int)](Set.empty)
 				else
 					val numOptions0 = normalisedRelations0(sp).length
