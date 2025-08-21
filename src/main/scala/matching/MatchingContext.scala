@@ -41,18 +41,39 @@ class MatchingContext(
 	/**
 	 * Creates a new MatchingContext with an additional match between relations.
 	 *
-	 * @param sp The signed predicate of both relations.
+	 * @param sp     The signed predicate of both relations.
 	 * @param relID0 The ID of the relation in the first clause.
 	 * @param relID1 The ID of the relation in the second clause.
 	 * @return A new MatchingContext with the extra relation match.
 	 */
 	def withMatch(sp: SignedPredicate, relID0: Int, relID1: Int): MatchingContext = {
+		// 1. Add the matches
 		val argList0 = normalisedRelations0(sp)(relID0)
 		val argList1 = normalisedRelations1(sp)(relID1)
-		val newQuotientMatching = quotientMatching.withMatches(argList0 zip argList1 *)
+		val quotientMatchingWithMatches = quotientMatching.withMatches(argList0 zip argList1 *)
+
+		// 2. Unify function results if arguments are unified.
+		def getResultUnions(relations: Map[SignedPredicate, Array[Vector[Int]]], side: Int): Set[(Int, Int)] = {
+			for
+				sp <- relations.keySet
+				if sp.isFunction
+				argListID1 <- relations(sp).indices
+				argListID2 <- relations(sp).indices
+				if argListID1 != argListID2
+				argList1 = relations(sp)(argListID1)
+				argList2 = relations(sp)(argListID2)
+				if argList1.init.zip(argList2.init)
+					.forall { (x, y) => quotientMatching.find(side)(x) == quotientMatching.find(side)(y) }
+			yield (argList1.last, argList2.last)
+		}
+		val resultUnions0 = getResultUnions(normalisedRelations0, 0)
+		val resultUnions1 = getResultUnions(normalisedRelations1, 1)
+		val quotientMatchingWithMatchesAndUnions =
+			quotientMatchingWithMatches.withUnions(resultUnions0.toSeq, resultUnions1.toSeq)
+
 
 		MatchingContext(
-			newQuotientMatching,
+			quotientMatchingWithMatchesAndUnions,
 			normalisedRelations0,
 			normalisedRelations1,
 			totalRelations,
@@ -121,7 +142,7 @@ class MatchingContext(
 		// Penalise for each equivalence class with a clashing quantifier.
 		val intra0 = (0 until quotientMatching.n0).count { v =>
 			v == quotientMatching.find(0)(v) // The vertex is a class representative.
-			&& quotientMatching.getQuantifier(0)(v) == Quantifier.Clashing
+				&& quotientMatching.getQuantifier(0)(v) == Quantifier.Clashing
 		}
 		val intra1 = (0 until quotientMatching.n1).count { v =>
 			v == quotientMatching.find(1)(v) // The vertex is a class representative.
@@ -137,8 +158,8 @@ class MatchingContext(
 			v.isDefined // The vertex is matched.
 				&& u == quotientMatching.find(0)(u) // The vertex is a class representative.
 				&& uQuant != Quantifier.Clashing // It's not already clashing.
-			  && vQuant.get != Quantifier.Clashing // The match also isn't.
-			  && uQuant.clashesWith(vQuant.get) // The quantifiers clash across the match.
+				&& vQuant.get != Quantifier.Clashing // The match also isn't.
+				&& uQuant.clashesWith(vQuant.get) // The quantifiers clash across the match.
 		}
 
 		intra0 + intra1 + inter

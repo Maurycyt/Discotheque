@@ -68,6 +68,15 @@ class QuotientMatching[T <: Semigroup[T]](
 		result
 	}
 
+	def withUnions(unions0: Seq[(Int, Int)], unions1: Seq[(Int, Int)]): QuotientMatching[T] = {
+		val result = QuotientMatching(n0, n1, sg0.clone(), sg1.clone())
+		matched(0).copyToArray(result.matched(0))
+		matched(1).copyToArray(result.matched(1))
+		result.quotient(0) = quotient(0).withUnions(unions0*)
+		result.quotient(1) = quotient(1).withUnions(unions1*)
+		result
+	}
+
 	def getSize: Int = n0 + n1
 
 	def getQuotientsSize: Int = quotient(0).getQuotientSize + quotient(1).getQuotientSize
