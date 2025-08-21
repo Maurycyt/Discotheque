@@ -11,7 +11,7 @@ class CheckpointSet[T](private val elements: Set[T] = Set.empty) extends Iterabl
 	private var exhausted: Set[T] = Set.empty
 
 	def this(elements: Set[T], exhausted: Set[T]) = {
-		this(elements)
+		this(elements ++ exhausted)
 		this.exhausted = exhausted
 	}
 

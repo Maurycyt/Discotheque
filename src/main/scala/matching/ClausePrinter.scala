@@ -53,6 +53,9 @@ object ClausePrinter {
 			}
 		}
 		println("Contributions:")
+		// Warning: the contributions outputted by this code may mark literals without a counterpart
+		// (i.e. without a literal with the same signed predicate in the other formula)
+		// as invalid, despite them not being counted negatively towards the score.
 		println((for Literal(sp, args) <- clause0.literals.toVector yield {
 			bestMatchingContext.getContribution(0, (sp, args.map(v => variableIDs0(v.name))))
 		}).mkString(" | ")

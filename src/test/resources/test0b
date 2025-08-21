@@ -1,0 +1,11 @@
+% Direct search should take <= 2^(1+4 = 5) iterations.
+% Non-valid-optimised search takes 24 iterations.
+% Function result optimisation does not improve upon this.
+% Connected components optimisation takes 21 iterations.
+% Searching for only assumptions takes 14 iterations and scores 0.8.
+% Searching for disjoint assumptions takes 7 iterations and scores 0.4.
+
+cnf / containment_is_transitive :
+    ( ~ subset(X,Y)
+    | ~ subset(Y,Z)
+    | subset(X,Z) )
