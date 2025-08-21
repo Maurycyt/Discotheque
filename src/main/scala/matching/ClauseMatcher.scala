@@ -23,8 +23,8 @@ class ClauseMatcher(
 	private val normalisedRelations0 = prepClauseForMatching(clause0, variableIDs0, commonSPs)
 	private val normalisedRelations1 = prepClauseForMatching(clause1, variableIDs1, commonSPs)
 
-	private val varToFunction0 = mapVarsToFunctions(normalisedRelations0)
-	private val varToFunction1 = mapVarsToFunctions(normalisedRelations1)
+	private val varToLiterals0 = mapVarsToLiterals(normalisedRelations0)
+	private val varToLiterals1 = mapVarsToLiterals(normalisedRelations1)
 
 	private val startingMatchCandidates =
 		getStartingMatchCandidates(commonSPs, normalisedRelations0, normalisedRelations1)
@@ -74,31 +74,35 @@ class ClauseMatcher(
 			// (although... maybe it could unlock some function symbols...)
 			argList0 = normalisedRelations0(sp)(argListID0)
 			argList1 = normalisedRelations1(sp)(argListID1)
-//			if !matchingContext.isSaturated(0, (sp, argList0)) ||
-//				!matchingContext.isSaturated(1, (sp, argList1))
 			if matchingContext.getContribution(0, (sp, argList0)) != Valid ||
 				matchingContext.getContribution(1, (sp, argList1)) != Valid
+			// Alternative:
+			//			if !matchingContext.isSaturated(0, (sp, argList0)) ||
+			//				!matchingContext.isSaturated(1, (sp, argList1))
 		} do {
 			// Try to match them
 			val newMatchingContext = matchingContext.withMatch(sp, argListID0, argListID1)
 
-			// Update the match candidates with unlocked function match candidates
-			val unlockedFunctionMatchCandidates = getUnlockedFunctionMatchCandidates(
+			// Update the match candidates with unlocked literal match candidates
+			val unlockedMatchCandidates = getUnlockedMatchCandidates(
 				newMatchingContext.quotientMatching,
-				varToFunction0,
-				varToFunction1,
+				varToLiterals0,
+				varToLiterals1,
 				argList0,
 				argList1
 			)
-			val newController = matchCandidates.checkpoint.addAll(unlockedFunctionMatchCandidates)
+			val newController = matchCandidates.checkpoint.addAll(unlockedMatchCandidates)
+			// Alternative:
+			// val newController = matchCandidates.checkpoint
 
-//			println(s"Matched $sp ${argList0.mkString("(",",",")")} ${argList1.mkString("(",",",")")}")
-//			println(s"Unlocked: ${unlockedFunctionMatchCandidates.mkString("\n",",\n","\n")}")
+			// Debug:
+			//			println(s"Matched $sp ${argList0.mkString("(",",",")")} ${argList1.mkString("(",",",")")}")
+			//			println(s"Unlocked: ${unlockedMatchCandidates.mkString("\n",",\n","\n")}")
 
 			// Recurse to search further
 			val newScore = newMatchingContext.score
 			val (newMatching, newResultScore) = backtrackSearch(
-				newMatchingContext, newScore, cfg, newController /*matchCandidates.checkpoint*/
+				newMatchingContext, newScore, cfg, newController
 			)
 			if newResultScore.score(cfg) > result._2.score(cfg) then
 				result = (newMatching, newResultScore)
@@ -176,16 +180,22 @@ object ClauseMatcher {
 
 	// Produces a map of all variables which are the result variables of functions
 	// to their sources (signed predicate and argument list ID)
-	private def mapVarsToFunctions(
+	private def mapVarsToLiterals(
 		normalisedRelations: Map[SignedPredicate, Array[Vector[Int]]]
-	): Map[Int, (SignedPredicate, Int)] = {
+	): Map[Int, Iterable[(SignedPredicate, Int)]] = {
 		normalisedRelations
-			.filter { (sp, _) => sp.isFunction }
 			.map { (sp, argLists) =>
-				argLists.zipWithIndex.map { (argList, idx) => (argList.last, (sp, idx)) }
+				if sp.isFunction then
+					// From each argList, associate the last argument with the sp and argList ID.
+					argLists.zipWithIndex.map { (argList, idx) => (argList.last, (sp, idx)) }
+				else
+					// From each argList, associate all arguments with the sp and argList ID.
+					argLists.zipWithIndex.flatMap { (argList, idx) =>
+						argList.map(v => (v, (sp, idx)))
+					}
 			}
 			.flatten
-			.toMap
+			.groupMap(_._1)(_._2)
 	}
 
 	// Get the match candidates that are available at the beginning of the backtracking process.
@@ -221,10 +231,10 @@ object ClauseMatcher {
 			Some(ClauseMatcherBacktrackingController(startingMatchCandidates))
 	}
 
-	private def getUnlockedFunctionMatchCandidates(
+	private def getUnlockedMatchCandidates(
 		qMatching: QuotientMatching[Quantifier],
-		varToFunction0: Map[Int, (SignedPredicate, Int)],
-		varToFunction1: Map[Int, (SignedPredicate, Int)],
+		varToLiterals0: Map[Int, Iterable[(SignedPredicate, Int)]],
+		varToLiterals1: Map[Int, Iterable[(SignedPredicate, Int)]],
 		argList0: Vector[Int],
 		argList1: Vector[Int]
 	): Map[SignedPredicate, Set[(Int, Int)]] = {
@@ -233,26 +243,33 @@ object ClauseMatcher {
 		val getMatching0 = qMatching.getMatching(0) andThen (_.get) andThen qMatching.find(1)
 		val getMatching1 = qMatching.getMatching(1) andThen (_.get) andThen qMatching.find(0)
 
-		val unlocked0 = argList0.toSet
-			// For each argument which is a function result
-			.filter(varToFunction0.contains)
-			// Get the SP, argListID, and matched SPs and argListIDs
-			.map { x => (varToFunction0(x), classes1(getMatching0(x)).flatMap(varToFunction1.get)) }
-			// Keep only those with the same SP, and convert to the form (SP, id0, id1)
-			.flatMap { case ((sp0, alID0), ys) =>
-				ys.filter(_._1 == sp0).map { (_, alID1) => (sp0, alID0, alID1) }
-			}
+		// Given two sets of (SP, argListID) pairs, yield their products, grouped by SP.
+		def pairUp(
+			xs: Iterable[(SignedPredicate, Int)],
+			ys: Iterable[(SignedPredicate, Int)]
+		): Set[(SignedPredicate, Int, Int)] = {
+			val xsGrouped = xs.groupMap(_._1)(_._2)
+			val ysGrouped = ys.groupMap(_._1)(_._2)
+			(for {
+				(sp, argListIDs0) <- xsGrouped
+				argListIDs1 <- ysGrouped.get(sp).to(Iterable)
+				alID0 <- argListIDs0
+				alID1 <- argListIDs1
+			} yield (sp, alID0, alID1)).toSet
+		}
+
+		val unlocked0 = argList0.distinct
+			// For each argument
+			// Get the SPs, argListIDs, and matched SPs and argListIDs
+			.map { x => (varToLiterals0(x), classes1(getMatching0(x)).flatMap(varToLiterals1)) }
+			.map { (xs, ys) => pairUp(xs, ys) }.reduce(_ ++ _)
 
 		// Same for the other side (except keep in mind orientation of result)
-		val unlocked1 = argList1.toSet
-			// For each argument which is a function result
-			.filter(varToFunction1.contains)
-			// Get the SP, argListID, and matched SPs and argListIDs.
-			.map { y => (varToFunction1(y), classes0(getMatching1(y)).flatMap(varToFunction0.get)) }
-			// Keep only those with the same SP, and convert to the form (SP, id0, id1)
-			.flatMap { case ((sp1, alID1), ys) =>
-				ys.filter(_._1 == sp1).map { (_, alID0) => (sp1, alID0, alID1) }
-			}
+		val unlocked1 = argList1.distinct
+			// For each argument
+			// Get the SPs, argListIDs, and matched SPs and argListIDs
+			.map { y => (classes0(getMatching1(y)).flatMap(varToLiterals0), varToLiterals1(y)) }
+			.map { (xs, ys) => pairUp(xs, ys) }.reduce(_ ++ _)
 
 		// Join the two results and return
 		val result = (unlocked0 ++ unlocked1).groupMap(_._1)((_, id0, id1) => (id0, id1))

@@ -7,9 +7,14 @@ import common.*
  * in the [[ClauseMatcher]]. Through an iterator, it provides candidates for matches, in
  * the form of a signed predicate, the index of the argument list on side 0, and the index
  * of the argument list on side 1.
+ *
+ * It supports the connected components optimisation, which means that its first iteration
+ * picks a matching from the available ones, but clears the controller upon taking a checkpoint.
+ * All matches must thus be unlocked anew.
  */
 class ClauseMatcherBacktrackingController(
-	private val matchCandidates: Map[SignedPredicate, CheckpointSet[(Int, Int)]]
+	private val matchCandidates: Map[SignedPredicate, CheckpointSet[(Int, Int)]],
+	private val isFirstIteration: Boolean = true
 ) extends Iterable[(SignedPredicate, (Int, Int))] {
 	private type CMBC = ClauseMatcherBacktrackingController
 	private type IT = (SignedPredicate, (Int, Int))
@@ -37,12 +42,25 @@ class ClauseMatcherBacktrackingController(
 		}
 
 		def checkpoint: CMBC = {
-			new CMBC(iterators.map((sp, csI) => (sp, csI.checkpoint)))
+			if isFirstIteration then
+				// If this is the first iteration, we clear the controller,
+				// so that it continues matching only connected components.
+				new CMBC(
+					iterators.map((sp, csI) => (sp, CheckpointSet[(Int, Int)](Set.empty, csI.getExhausted))),
+					isFirstIteration = false
+				)
+			else
+				// Proceed as normal
+				new CMBC(iterators.map((sp, csI) => (sp, csI.checkpoint)), isFirstIteration)
+
 		}
 	}
 
 	override def iterator: CMBCIterator = CMBCIterator(this)
 
 	def addAll(elements: Map[SignedPredicate, IterableOnce[(Int, Int)]]): CMBC =
-		new CMBC(matchCandidates.map((sp, cs) => (sp, cs.addAll(elements.getOrElse(sp, Set.empty)))))
+		new CMBC(
+			matchCandidates.map((sp, cs) => (sp, cs.addAll(elements.getOrElse(sp, Set.empty)))),
+			isFirstIteration
+		)
 }

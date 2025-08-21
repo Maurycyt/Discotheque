@@ -17,6 +17,8 @@ class CheckpointSet[T](private val elements: Set[T] = Set.empty) extends Iterabl
 
 	class ExhaustibleIterator(cSet: CheckpointSet[T]) extends Iterator[T] {
 		private var exhausted: Set[T] = cSet.exhausted
+		
+		def getExhausted: Set[T] = exhausted
 
 		private val elementIterator = cSet.elements.iterator.filterNot(exhausted.contains)
 
