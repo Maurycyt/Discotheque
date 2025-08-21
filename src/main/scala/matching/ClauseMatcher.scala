@@ -187,7 +187,7 @@ object ClauseMatcher {
 			normalisedRelations.values.flatten.flatten.toSet.map(x => (x, Iterable.empty)).toMap
 		val proper = normalisedRelations
 			.map { (sp, argLists) =>
-				if sp.isFunction then
+				if /*sp.isFunction*/ false then
 					// From each argList, associate the last argument with the sp and argList ID.
 					argLists.zipWithIndex.map { (argList, idx) => (argList.last, (sp, idx)) }
 				else
@@ -210,7 +210,7 @@ object ClauseMatcher {
 		commonSPs
 			.map { sp =>
 				// Starting candidates do not include function symbols.
-				if sp.isFunction then
+				if /*sp.isFunction*/ false then
 					sp -> CheckpointSet[(Int, Int)](Set.empty)
 				else
 					val numOptions0 = normalisedRelations0(sp).length
