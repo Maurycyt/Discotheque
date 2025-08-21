@@ -1,4 +1,6 @@
-cnf / flip3 : 
+% Took 738 297 027 iterations without function optimisation.
+
+cnf / flip3 :
     ( ~ member(ordered_pair(ordered_pair(V,U),W),X)
     | ~ member(ordered_pair(ordered_pair(U,V),W),cross_product(cross_product(universal_class,universal_class),universal_class))
     | member(ordered_pair(ordered_pair(U,V),W),flip(X)) ) 

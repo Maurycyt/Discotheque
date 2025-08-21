@@ -183,7 +183,9 @@ object ClauseMatcher {
 	private def mapVarsToLiterals(
 		normalisedRelations: Map[SignedPredicate, Array[Vector[Int]]]
 	): Map[Int, Iterable[(SignedPredicate, Int)]] = {
-		normalisedRelations
+		val default =
+			normalisedRelations.values.flatten.flatten.toSet.map(x => (x, Iterable.empty)).toMap
+		val proper = normalisedRelations
 			.map { (sp, argLists) =>
 				if sp.isFunction then
 					// From each argList, associate the last argument with the sp and argList ID.
@@ -196,6 +198,7 @@ object ClauseMatcher {
 			}
 			.flatten
 			.groupMap(_._1)(_._2)
+		default ++ proper
 	}
 
 	// Get the match candidates that are available at the beginning of the backtracking process.

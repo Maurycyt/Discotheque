@@ -1,5 +1,5 @@
 % Direct search with matching non-valid literals should take about 7 592 879 675 (7.6B) iterations.
-% It actually took -1 797 179 365 (lol), and 5 hours, 6 minutes.
+% It actually took -1 797 179 365 (lol.. 2497787931? or 6792755227), and 5 hours, 6 minutes.
 
 fof / t36_zfmisc_1 :
     ! [A,B,C] :
