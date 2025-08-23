@@ -95,12 +95,10 @@ class FormulaToClauseVisitor(
 		val newNames = ctx.variables.variable.asScala.toSet.map(_.name.getText)
 		val (clause, nameMapping) = ctx.formula.accept(withNames(newNames))
 
-		import scala.language.implicitConversions
-		implicit def bool2int(b:Boolean): Int = if b then 1 else 0
 		val quantifier =
 			if mode == Mode.Both then
 				common.Quantifier.None
-			else if ((ctx.quantifier.getText == "!") + (mode == Mode.Positive)) % 2 == 0 then
+			else if (ctx.quantifier.getText == "!") ^ (mode == Mode.Positive) then
 				common.Quantifier.Universal
 			else
 				common.Quantifier.Existential
