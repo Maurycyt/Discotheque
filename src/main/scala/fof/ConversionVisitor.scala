@@ -94,9 +94,17 @@ class FormulaToClauseVisitor(
 	override def visitFQuantified(ctx: FQuantifiedContext): (Clause[Variable], Map[String, String]) = {
 		val newNames = ctx.variables.variable.asScala.toSet.map(_.name.getText)
 		val (clause, nameMapping) = ctx.formula.accept(withNames(newNames))
+
+		import scala.language.implicitConversions
+		implicit def bool2int(b:Boolean): Int = if b then 1 else 0
 		val quantifier =
-			if ctx.quantifier.getText == "!"
-			then common.Quantifier.Universal else common.Quantifier.Existential
+			if mode == Mode.Both then
+				common.Quantifier.None
+			else if ((ctx.quantifier.getText == "!") + (mode == Mode.Positive)) % 2 == 0 then
+				common.Quantifier.Universal
+			else
+				common.Quantifier.Existential
+
 		val newQuantifiers = clause.quantifiers
 			++ newNames.map { name => (nameMapping(name), quantifier) }.toMap
 		(clause.copy(quantifiers = newQuantifiers), nameMapping)

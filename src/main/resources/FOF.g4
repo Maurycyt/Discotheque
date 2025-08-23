@@ -5,8 +5,8 @@ fofFormulaList : fofFormula* ;
 fofFormula : 'fof' '/' name=LowerIdent ':' formula ;
 
 formula
-    : '(' formula ')'                                       # FWrapped
-    | literal                                               # FLiteral
+    : literal                                               # FLiteral
+    | '(' formula ')'                                       # FWrapped
     | Tilde formula                                         # FNegated
     | formula BinaryOp formula                              # FBinary
     | quantifier=Quantifier '[' variables ']' ':' formula   # FQuantified
