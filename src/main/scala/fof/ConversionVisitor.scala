@@ -98,7 +98,7 @@ class FormulaToClauseVisitor(
 		val quantifier =
 			if mode == Mode.Both then
 				common.Quantifier.None
-			else if (ctx.quantifier.getText == "!") ^ (mode == Mode.Positive) then
+			else if (ctx.quantifier.getText == "!") ^ (mode == Mode.Negative) then
 				common.Quantifier.Universal
 			else
 				common.Quantifier.Existential
