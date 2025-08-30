@@ -56,12 +56,12 @@ class ClauseMatcher(
 		cfg: ScoringConfig,
 		controller: ClauseMatcherBacktrackingController
 	): (MatchingContext, Score) = {
-		if backtrackCounter % 100000 == 0 then {
-			print(
-				s"\rBacktrack search: ${backtrackCounter / (1000 * 1000)}.${backtrackCounter / (100 * 1000) % 10}M iterations."
-			)
-		}
-		backtrackCounter += 1
+//		if backtrackCounter % 100000 == 0 then {
+		//			print(
+		//				s"\rBacktrack search: ${backtrackCounter / (1000 * 1000)}.${backtrackCounter / (100 * 1000) % 10}M iterations."
+		//			)
+		//		}
+		//		backtrackCounter += 1
 
 		var result = (matchingContext, score)
 		val matchCandidates = controller.iterator
@@ -132,7 +132,7 @@ class ClauseMatcher(
 			case None => (firstMatchingContext, firstScore)
 		}
 
-		println(s"\rTook $backtrackCounter iterations.")
+//		println(s"\rTook $backtrackCounter iterations.")
 
 		BestMatchingResult(
 			name, (clause0, clause1), (variableIDs0, variableIDs1), bestMatchingContext, score
