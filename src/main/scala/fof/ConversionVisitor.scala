@@ -165,14 +165,14 @@ class FormulaToClauseVisitor(
 class LiteralVisitor(nameMapping: Map[String, String]) extends CNFnFOFBaseVisitor[AnyRef] {
 	override def visitLNamed(ctx: LNamedContext): Literal[Term] = {
 		Literal(
-			SignedPredicate(false, ctx.relation.name.getText),
+			SignedPredicate(false, ctx.relation.name.getText, ctx.relation.termList.term.size),
 			ctx.relation.termList.term.asScala.toVector.map(_.accept(this).asInstanceOf[Term])
 		)
 	}
 
 	override def visitLComp(ctx: LCompContext): Literal[Term] =
 		Literal(
-			SignedPredicate(ctx.comp.getText == "!=", "="),
+			SignedPredicate(ctx.comp.getText == "!=", "=", 2),
 			ctx.term.asScala.toVector.map(_.accept(this).asInstanceOf[Term])
 		)
 

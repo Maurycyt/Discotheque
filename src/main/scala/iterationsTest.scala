@@ -14,7 +14,7 @@ def iterationsTest(args: String*): Unit = {
 				Map.empty,
 				(0 until size).map { i =>
 					Literal(
-						SignedPredicate(false, "s"), Vector(Variable(s"X${2 * i}"), Variable(s"X${2 * i + 1}"))
+						SignedPredicate(false, "s", 2), Vector(Variable(s"X${2 * i}"), Variable(s"X${2 * i + 1}"))
 					)
 				}.toSet
 			)

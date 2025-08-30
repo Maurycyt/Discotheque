@@ -64,7 +64,7 @@ def eliminateFunctor(
 		// depend only on the constant name, not on any arguments (there are no arguments).
 		val newVarName = "CONST_" + c.name
 		// If a constant is used multiple times, the literals will be automatically deduplicated.
-		val newLiteral = Literal(SignedPredicate(true, c.name + '\''), Vector(Variable(newVarName)))
+		val newLiteral = Literal(SignedPredicate(true, c.name + '\'', 1), Vector(Variable(newVarName)))
 		(
 			accLiterals + newLiteral,
 			usedNames + newVarName,
@@ -75,7 +75,9 @@ def eliminateFunctor(
 			accLiterals, usedNames, f.args
 		)
 		val newVarName = getNewName(newUsedNames)
-		val newLiteral = Literal(SignedPredicate(true, f.name + '\''), newArgs :+ Variable(newVarName))
+		val newLiteral = Literal(
+			SignedPredicate(true, f.name + '\'', newArgs.length + 1), newArgs :+ Variable(newVarName)
+		)
 		(
 			newAccLiterals + newLiteral,
 			newUsedNames + newVarName,
