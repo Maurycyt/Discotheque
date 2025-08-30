@@ -71,7 +71,8 @@ def main(args: String*): Unit = {
 	val variables = (new VariableCollector).visit(queryFormulaCtx)
 	val queryClause = common.correctQuantifiers(
 		FormulaToClauseVisitor(nameMapping = variables.map { n => (n, n) }.toMap)
-			.visit(queryFormulaCtx)._1)
+			.visit(queryFormulaCtx)._1
+	)
 	println(s"Flattened: $queryClause")
 	println
 
