@@ -18,10 +18,11 @@ def main(args: String*): Unit = {
 		)
 
 	val filepath: String = args(0)
-	val validRelationReward: Double = if args.length >= 2 then args(1).toDouble else 1.0
-	val invalidRelationPenalty: Double = if args.length >= 3 then args(2).toDouble else 1.0
-	val variableUnionPenalty: Double = if args.length >= 4 then args(3).toDouble else 1.0
-	val quantifierClashPenalty: Double = if args.length >= 5 then args(4).toDouble else 1.0
+	val numberOfResults: Int = if args.length >= 2 then args(1).toInt else 3
+	val validRelationReward: Double = if args.length >= 3 then args(2).toDouble else 1.0
+	val invalidRelationPenalty: Double = if args.length >= 4 then args(3).toDouble else 1.0
+	val variableUnionPenalty: Double = if args.length >= 5 then args(4).toDouble else 1.0
+	val quantifierClashPenalty: Double = if args.length >= 6 then args(5).toDouble else 1.0
 
 	val cfg = matching.ScoringConfig(
 		validRelationReward,
@@ -95,10 +96,10 @@ def main(args: String*): Unit = {
 
 	// OUTPUT
 
-	println(s"Three best matchings:")
+	println(s"$numberOfResults best matchings:")
 	println
 
-	bestMatchings.sortBy(-_.score.relativeScore(cfg)).take(3).filterNot(_.score.score(cfg) <= 0)
+	bestMatchings.sortBy(-_.score.relativeScore(cfg)).take(numberOfResults).filterNot(_.score.score(cfg) <= 0)
 		.foreach { result =>
 			ClausePrinter.describeBestMatching(result, cfg)
 		}
