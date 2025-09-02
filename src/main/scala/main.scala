@@ -45,6 +45,7 @@ def main(args: String*): Unit = {
 			common.Formula(name, common.correctQuantifiers(clause))
 		}
 		.toSet
+//		.filter(_.clause.literals.size <= 10)
 	println(s"${formulaList.size} of them are distinct.")
 
 
@@ -99,7 +100,8 @@ def main(args: String*): Unit = {
 	println(s"$numberOfResults best matchings:")
 	println
 
-	bestMatchings.sortBy(-_.score.relativeScore(cfg)).take(numberOfResults).filterNot(_.score.score(cfg) <= 0)
+	bestMatchings.sortBy(m => (-m.score.relativeScore(cfg), -m.score.score(cfg)))
+		.take(numberOfResults).filterNot(_.score.score(cfg) <= 0)
 		.foreach { result =>
 			ClausePrinter.describeBestMatching(result, cfg)
 		}

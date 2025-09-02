@@ -15,6 +15,8 @@ def slowest_queries(args: String*): Unit = {
 			"Usage: sbt \"runMain slowest_queries <path to database>\""
 		)
 
+	val sizeLimit = if args.length >= 2 then args(1).toInt else 10 * 1000
+
 	val filepath: String = args(0)
 	println(s"Reading file: $filepath")
 	val cnfNfofFormulaListCtx = getCNFnFOFParser(CharStreams.fromFileName(filepath)).formulaList
@@ -24,7 +26,7 @@ def slowest_queries(args: String*): Unit = {
 			val clause = (new FormulaToClauseVisitor).visit(entry)._1
 			common.Formula(name, common.correctQuantifiers(clause))
 		}
-		.distinct
+		.distinct.filter(_.clause.literals.size <= sizeLimit)
 
 	val formulaListSize = formulaList.size
 	println(s"Loaded $formulaListSize formulae.")
