@@ -17,7 +17,7 @@ The matching algorithm is in [`src/main/scala/matching`](src/main/scala/matching
 
 ## Usage
 
-Should you wish to play around with the search engine, simply run `sbt "runMain main <dataset>"`, where `<dataset>` is a compatible file from [](src/test/resources). The compatible files are:
+Should you wish to play around with the search engine, simply run `sbt "runMain main <dataset>"`, where `<dataset>` is a compatible file from [`src/test/resources`](src/test/resources). The compatible files are:
 - all which start with `test`, and
 - all which end in `.cnf`, `.fof`, or `.cnfNfof`.
 
